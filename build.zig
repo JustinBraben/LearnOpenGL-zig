@@ -135,18 +135,21 @@ const getting_started = [_][]const u8{
 
 const lighting = [_][]const u8{
     "1.colors/colors",
-    // "2.1.basic_lighting_diffuse/basic_lighting_diffuse",
-    // "2.2.basic_lighting_specular/basic_lighting_specular",
-    // "3.1.materials/materials",
-    // "3.2.materials_exercise1/materials_exercise1",
-    // "4.1.lighting_map_diffuse/lighting_map_diffuse",
-    // "4.2.lighting_maps_specular/lighting_maps_specular",
-    // "5.1.light_casters_directional/light_casters_directional",
-    // "5.2.light_casters_point/light_casters_point",
-    // "5.3.light_casters_spot/light_casters_spot",
-    // "5.4.light_casters_spot_soft/light_casters_spot_soft",
-    // "6.0.multiple_lights/multiple_lights",
-    // "6.1.multiple_lights_exercise1/multiple_lights_exercise1",
+    "2.1.basic_lighting_diffuse/basic_lighting_diffuse",
+    "2.2.basic_lighting_specular/basic_lighting_specular",
+    "2.3.basic_lighting_exercise1/basic_lighting_exercise1",
+    "2.4.basic_lighting_exercise2/basic_lighting_exercise2",
+    "2.5.basic_lighting_exercise3/basic_lighting_exercise3",
+    "3.1.materials/materials",
+    "3.2.materials_exercise1/materials_exercise1",
+    "4.1.lighting_map_diffuse/lighting_map_diffuse",
+    "4.2.lighting_maps_specular/lighting_maps_specular",
+    "5.1.light_casters_directional/light_casters_directional",
+    "5.2.light_casters_point/light_casters_point",
+    "5.3.light_casters_spot/light_casters_spot",
+    "5.4.light_casters_spot_soft/light_casters_spot_soft",
+    "6.0.multiple_lights/multiple_lights",
+    "6.1.multiple_lights_exercise1/multiple_lights_exercise1",
 };
 
 const model_loading = [_][]const u8{

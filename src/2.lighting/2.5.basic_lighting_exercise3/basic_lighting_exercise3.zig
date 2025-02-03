@@ -31,6 +31,9 @@ var camera = Camera.init(camera_pos);
 var delta_time: f32 = 0.0;
 var last_frame: f32 = 0.0;
 
+// lighting
+var light_position = [_]f32{4.2, 2.0, 4.0};
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
@@ -66,8 +69,8 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/2.1.basic_lighting_diffuse/2.1.basic_lighting.vs", "src/2.lighting/2.1.basic_lighting_diffuse/2.1.basic_lighting.fs");
-    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/2.1.basic_lighting_diffuse/2.1.light_cube.vs", "src/2.lighting/2.1.basic_lighting_diffuse/2.1.light_cube.fs");
+    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/2.5.basic_lighting_exercise3/2.5.basic_lighting.vs", "src/2.lighting/2.5.basic_lighting_exercise3/2.5.basic_lighting.fs");
+    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.vs", "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -114,20 +117,6 @@ pub fn main() !void {
         -0.5, 0.5,  0.5,   0.0,  1.0, 0.0,
         -0.5, 0.5,  -0.5,  0.0,  1.0, 0.0,
     };
-
-    // // Comment lines to view where each are in the view!
-    // const cube_positions = [_][3]f32{
-    //     .{ 0.0, 0.0, 0.0 },
-    //     // .{ 2.0, 5.0, -15.0 },
-    //     // .{ -1.5, -2.2, -2.5 },
-    //     // .{ -3.8, -2.0, -12.3 },
-    //     // .{ 2.4, -0.4, -3.5 },
-    //     // .{ -1.7, 3.0, -7.5 },
-    //     // .{ 1.3, -2.0, -2.5 },
-    //     // .{ 1.5, 2.0, -2.5 },
-    //     // .{ 1.5, 0.2, -1.5 },
-    //     // .{ -1.3, 1.0, -1.5 },
-    // };
 
     var VBO: gl.Uint = undefined;
     var cube_vao: gl.Uint = undefined;
@@ -184,14 +173,18 @@ pub fn main() !void {
         processInput(window, delta_time);
 
         // Set the whole screen to a color
-        gl.clearColor(0.2, 0.3, 0.3, 1.0);
+        gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // also clear the depth buffer now!
+
+        light_position[0] = 4.0 + zm.sin(@as(f32, @floatCast(glfw.getTime())) * 2.0);
+        light_position[1] = 4.0 + zm.sin(@as(f32, @floatCast(glfw.getTime())) / 2.0) * 1.0;
 
         // be sure to activate shader when setting uniforms/drawing objects
         lighting_shader.use();
         lighting_shader.setVec3f("objectColor", .{ 1.0, 0.5, 0.31 });
         lighting_shader.setVec3f("lightColor",  .{ 1.0, 1.0, 1.0 });
-        lighting_shader.setVec3f("lightPos",  .{ 1.2, 1.0, 2.0 });
+        lighting_shader.setVec3f("lightPos",  light_position);
+        lighting_shader.setVec3f("viewPos", zm.vecToArr3(camera.position));
 
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
@@ -204,17 +197,20 @@ pub fn main() !void {
         zm.storeMat(&view, viewM);
         lighting_shader.setMat4f("view", view);
 
+        // // zm.storeMat(&model, zm.translation(0.0, zm.sin(current_frame), 0.0));
         zm.storeMat(&model, zm.identity());
         lighting_shader.setMat4f("model", model);
         gl.bindVertexArray(cube_vao);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
 
+        const light_trans = zm.translation(light_position[0], light_position[1], light_position[2]);
+        const light_modelM = zm.mul(light_trans, zm.scaling(0.2, 0.2, 0.2));
+        zm.storeMat(&model, light_modelM);
+
         lighting_cube_shader.use();
         lighting_cube_shader.setMat4f("projection", projection);
         lighting_cube_shader.setMat4f("view", view);
-        zm.storeMat(&model, zm.mul(zm.translation(4.2, 2.0, 4.0), zm.scaling(0.2, 0.2, 0.2)));
         lighting_cube_shader.setMat4f("model", model);
-
         gl.bindVertexArray(light_cube_vao);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
 

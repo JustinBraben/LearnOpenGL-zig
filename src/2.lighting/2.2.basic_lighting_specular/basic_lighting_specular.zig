@@ -69,8 +69,8 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "assets/2.2.basic_lighting_vert.glsl", "assets/2.2.basic_lighting_frag.glsl");
-    var lighting_cube_shader: Shader = Shader.create(arena, "assets/1.1.light_cube_vert.glsl", "assets/1.1.light_cube_frag.glsl");
+    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/2.2.basic_lighting_specular/2.2.basic_lighting.vs", "src/2.lighting/2.2.basic_lighting_specular/2.2.basic_lighting.fs");
+    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.vs", "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -176,9 +176,6 @@ pub fn main() !void {
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-        light_position[0] = 4.0 + zm.sin(@as(f32, @floatCast(glfw.getTime())) * 2.0);
-        light_position[1] = 4.0 + zm.sin(@as(f32, @floatCast(glfw.getTime())) / 2.0) * 1.0;
-
         // be sure to activate shader when setting uniforms/drawing objects
         lighting_shader.use();
         lighting_shader.setVec3f("objectColor", .{ 1.0, 0.5, 0.31 });
@@ -206,8 +203,6 @@ pub fn main() !void {
         const light_trans = zm.translation(light_position[0], light_position[1], light_position[2]);
         const light_modelM = zm.mul(light_trans, zm.scaling(0.2, 0.2, 0.2));
         zm.storeMat(&model, light_modelM);
-        // zm.storeMat(&model, zm.mul(zm.translation(4.2, 2.0, 4.0), zm.scaling(0.2, 0.2, 0.2)));
-        // zm.storeMat(&model, zm.identity());
 
         lighting_cube_shader.use();
         lighting_cube_shader.setMat4f("projection", projection);
