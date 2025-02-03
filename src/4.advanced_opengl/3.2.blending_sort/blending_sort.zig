@@ -29,16 +29,15 @@ var last_frame: f32 = 0.0;
 // lighting
 var light_position = [_]f32{4.2, 2.0, 4.0};
 
+// Needed for HashMap with key f32
 const FloatContext = struct {
-    pub fn hash(self: @This(), key: f32) u64 {
-        _ = self;
+    pub fn hash(_: @This(), key: f32) u64 {
         // Convert float bits to u32 for hashing
         const bits = @as(u32, @bitCast(key));
         return std.hash.Wyhash.hash(0, std.mem.asBytes(&bits));
     }
 
-    pub fn eql(self: @This(), a: f32, b: f32) bool {
-        _ = self;
+    pub fn eql(_: @This(), a: f32, b: f32) bool {
         return a == b;
     }
 };
