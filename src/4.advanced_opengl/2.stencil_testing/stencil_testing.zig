@@ -67,10 +67,14 @@ pub fn main() !void {
     // -----------------------------
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
+    gl.enable(gl.STENCIL_TEST);
+    gl.stencilFunc(gl.NOTEQUAL, 1, 0xFF);
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
 
     // build and compile shaders
     // -------------------------
-    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.vs", "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.fs");
+    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.vs", "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.fs");
+    var shader_single_color: Shader = Shader.create(arena, "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.vs", "src/4.advanced_opengl/2.stencil_testing/2.stencil_single_color.fs");
 
     const cubeVertices = [_]gl.Float{
         // positions       // texture Coords
@@ -207,33 +211,75 @@ pub fn main() !void {
         // render
         // ------
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
 
-        shader.use();
-        zm.storeMat(&model, zm.translation(-1.0, 0.0, -1.0));
-        shader.setMat4f("model", model);
+        // set uniforms
+        shader_single_color.use();
+        zm.storeMat(&model, zm.identity());
+        shader_single_color.setMat4f("model", model);
         const viewM = camera.getViewMatrix();
         zm.storeMat(&view, viewM);
-        shader.setMat4f("view", view);
+        shader_single_color.setMat4f("view", view);
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
         const projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(camera.zoom), aspect_ratio, 0.1, 100.0);
         zm.storeMat(&projection, projectionM);
-        shader.setMat4f("projection",  projection);
+        shader_single_color.setMat4f("projection",  projection);
+
+        shader.use();
+        shader.setMat4f("view", view);
+        shader.setMat4f("projection", projection);
+
+        // draw floor as normal, but don't write the floor to the stencil buffer, we only care about the containers. We set its mask to 0x00 to not write to the stencil buffer.
+        gl.stencilMask(0x00);
+        // floor
+        gl.bindVertexArray(planeVAO);
+        gl.bindTexture(gl.TEXTURE_2D, floor_texture);
+        zm.storeMat(&model, zm.identity());
+        shader.setMat4f("model",  model);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        gl.bindVertexArray(0);
+
+        // 1st. render pass, draw objects as normal, writing to the stencil buffer
+        // --------------------------------------------------------------------
+        gl.stencilFunc(gl.ALWAYS, 1, 0xFF);
+        gl.stencilMask(0xFF);
         // cubes
         gl.bindVertexArray(cubeVAO);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, cube_texture);
-        gl.drawArrays(gl.TRIANGLES, 0, 36);
-        zm.storeMat(&model, zm.mul(zm.identity(), zm.translation(2.0, 0.0, 0.0)));
+        const scale: f32 = 1.1;
+        const model_translation1 = zm.translation(-1.0, 0.0, -1.0);
+        const model_translation2 = zm.translation(2.0, 0.0, 0.0);
+        const model_scale = zm.scaling(scale, scale, scale);
+        zm.storeMat(&model, zm.mul(zm.identity(), model_translation1));
         shader.setMat4f("model", model);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
-        // floor
-        gl.bindVertexArray(planeVAO);
-        gl.bindTexture(gl.TEXTURE_2D, floor_texture);
-        shader.setMat4f("model",  zm.matToArr(zm.identity()));
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        zm.storeMat(&model, zm.mul(zm.identity(), model_translation2));
+        shader.setMat4f("model", model);
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
+
+        // 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
+        // Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
+        // the objects' size differences, making it look like borders.
+        // -----------------------------------------------------------------------------------------------------------------------------
+        gl.stencilFunc(gl.NOTEQUAL, 1, 0xFF);
+        gl.stencilMask(0x00);
+        gl.disable(gl.DEPTH_TEST);
+        shader_single_color.use();
+        // cubes
+        gl.bindVertexArray(cubeVAO);
+        gl.bindTexture(gl.TEXTURE_2D, cube_texture);
+        zm.storeMat(&model, zm.mul(model_scale, zm.mul(zm.identity(), model_translation1)));
+        shader_single_color.setMat4f("model", model);
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
+        zm.storeMat(&model, zm.mul(model_scale, zm.mul(zm.identity(), model_translation2)));
+        shader_single_color.setMat4f("model", model);
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
         gl.bindVertexArray(0);
+        gl.stencilMask(0xFF);
+        gl.stencilFunc(gl.ALWAYS, 0, 0xFF);
+        gl.enable(gl.DEPTH_TEST);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
