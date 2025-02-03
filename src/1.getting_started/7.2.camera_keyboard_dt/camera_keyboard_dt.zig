@@ -47,7 +47,7 @@ pub fn main() !void {
     const cameraUp = zm.f32x4(0.0, 1.0, 0.0, 1.0);
 
     // create shader program
-    var shader_program: Shader = Shader.create(arena, "assets/6.2.vertexShaderCoord.glsl", "assets/6.2.fragmentShaderCoord.glsl");
+    var shader_program: Shader = Shader.create(arena, "src/1.getting_started/7.2.camera_keyboard_dt/7.2.camera.vs", "src/1.getting_started/7.2.camera_keyboard_dt/7.2.camera.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -138,11 +138,11 @@ pub fn main() !void {
     defer zstbi.deinit();
     zstbi.setFlipVerticallyOnLoad(true);
 
-    const image1_path: [:0]const u8 = "assets/container.jpg";
+    const image1_path: [:0]const u8 = "resources/textures/container.jpg";
     var image1 = try zstbi.Image.loadFromFile(image1_path, 0);
     defer image1.deinit();
 
-    const image2_path: [:0]const u8 = "assets/awesomeface.png";
+    const image2_path: [:0]const u8 = "resources/textures/awesomeface.png";
     var image2 = try zstbi.Image.loadFromFile(image2_path, 0);
     defer image2.deinit();
 
