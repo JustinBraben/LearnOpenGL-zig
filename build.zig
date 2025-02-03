@@ -196,5 +196,6 @@ const model_loading = [_][]const u8{
 
 const advanced_opengl = [_][]const u8{
     "1.1.depth_testing/depth_testing",
+    "1.2.depth_testing_view/depth_testing_view",
     "6.1.cubemaps_skybox/cubemaps_skybox",
 };

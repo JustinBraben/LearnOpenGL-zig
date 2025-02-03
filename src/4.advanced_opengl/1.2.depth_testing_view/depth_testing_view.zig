@@ -66,13 +66,14 @@ pub fn main() !void {
     // configure global opengl state
     // -----------------------------
     gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.ALWAYS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 
-    // create shader program
-    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/6.1.cubemaps_skybox/6.1.cubemaps.vs", "src/4.advanced_opengl/6.1.cubemaps_skybox/6.1.cubemaps.fs");
-    var skybox_shader: Shader = Shader.create(arena, "src/4.advanced_opengl/6.1.cubemaps_skybox/6.1.skybox.vs", "src/4.advanced_opengl/6.1.cubemaps_skybox/6.1.skybox.fs");
+    // build and compile shaders
+    // -------------------------
+    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.vs", "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.fs");
 
     const cubeVertices = [_]gl.Float{
-        // positions          // texture Coords
+        // positions       // texture Coords
         -0.5, -0.5, -0.5,  0.0, 0.0,
          0.5, -0.5, -0.5,  1.0, 0.0,
          0.5,  0.5, -0.5,  1.0, 1.0,
@@ -116,49 +117,16 @@ pub fn main() !void {
         -0.5,  0.5, -0.5,  0.0, 1.0
     };
 
-    const skyboxVertices = [_]gl.Float{
-        // positions          
-        -1.0,  1.0, -1.0,
-        -1.0, -1.0, -1.0,
-         1.0, -1.0, -1.0,
-         1.0, -1.0, -1.0,
-         1.0,  1.0, -1.0,
-        -1.0,  1.0, -1.0,
+    const planeVertices = [_]gl.Float{
+        // positions       // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode)
+                           // this will cause the floor texture to repeat)
+        5.0, -0.5,  5.0,   2.0, 0.0,
+        -5.0, -0.5,  5.0,  0.0, 0.0,
+        -5.0, -0.5, -5.0,  0.0, 2.0,
 
-        -1.0, -1.0,  1.0,
-        -1.0, -1.0, -1.0,
-        -1.0,  1.0, -1.0,
-        -1.0,  1.0, -1.0,
-        -1.0,  1.0,  1.0,
-        -1.0, -1.0,  1.0,
-
-         1.0, -1.0, -1.0,
-         1.0, -1.0,  1.0,
-         1.0,  1.0,  1.0,
-         1.0,  1.0,  1.0,
-         1.0,  1.0, -1.0,
-         1.0, -1.0, -1.0,
-
-        -1.0, -1.0,  1.0,
-        -1.0,  1.0,  1.0,
-         1.0,  1.0,  1.0,
-         1.0,  1.0,  1.0,
-         1.0, -1.0,  1.0,
-        -1.0, -1.0,  1.0,
-
-        -1.0,  1.0, -1.0,
-         1.0,  1.0, -1.0,
-         1.0,  1.0,  1.0,
-         1.0,  1.0,  1.0,
-        -1.0,  1.0,  1.0,
-        -1.0,  1.0, -1.0,
-
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0,  1.0,
-         1.0, -1.0, -1.0,
-         1.0, -1.0, -1.0,
-        -1.0, -1.0,  1.0,
-         1.0, -1.0,  1.0
+        5.0, -0.5,  5.0,   2.0, 0.0,
+        -5.0, -0.5, -5.0,  0.0, 2.0,
+        5.0, -0.5, -5.0,   2.0, 2.0		
     };
 
     // cube VAO
@@ -179,18 +147,22 @@ pub fn main() !void {
     gl.enableVertexAttribArray(1);
     const texture_coords_offset: [*c]c_uint = (3 * @sizeOf(gl.Float));
     gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), texture_coords_offset);
-    // skybox VAO
-    var skyboxVAO: gl.Uint = undefined;
-    var skyboxVBO: gl.Uint = undefined;
-    gl.genVertexArrays(1, &skyboxVAO);
-    defer gl.deleteVertexArrays(1, &skyboxVAO);
-    gl.genBuffers(1, &skyboxVBO);
-    defer gl.deleteBuffers(1, &skyboxVBO);
-    gl.bindVertexArray(skyboxVAO);
-    gl.bindBuffer(gl.ARRAY_BUFFER, skyboxVBO);
-    gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * skyboxVertices.len, &skyboxVertices, gl.STATIC_DRAW);
+    gl.bindVertexArray(0);
+    // plane VAO
+    var planeVAO: gl.Uint = undefined;
+    var planeVBO: gl.Uint = undefined;
+    gl.genVertexArrays(1, &planeVAO);
+    defer gl.deleteVertexArrays(1, &planeVAO);
+    gl.genBuffers(1, &planeVBO);
+    defer gl.deleteBuffers(1, &planeVBO);
+    gl.bindVertexArray(planeVAO);
+    gl.bindBuffer(gl.ARRAY_BUFFER, planeVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * planeVertices.len, &planeVertices, gl.STATIC_DRAW);
     gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 3 * @sizeOf(gl.Float), null);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), null);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), texture_coords_offset);
+    gl.bindVertexArray(0);
 
     // zstbi: loading an image.
     zstbi.init(allocator);
@@ -198,27 +170,17 @@ pub fn main() !void {
 
     // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
-    const container_path = "resources/textures/container.jpg";
-    const faces = &.{
-        "resources/textures/skybox/right.jpg",
-        "resources/textures/skybox/left.jpg",
-        "resources/textures/skybox/top.jpg",
-        "resources/textures/skybox/bottom.jpg",
-        "resources/textures/skybox/front.jpg",
-        "resources/textures/skybox/back.jpg",
-    };
+    const marble_path = "resources/textures/marble.jpg";
+    const metal_path = "resources/textures/metal.png";
     var cube_texture: gl.Uint = undefined;
-    var cube_map_texture: gl.Uint = undefined;
-    try loadTexture(container_path, &cube_texture);
-    try loadCubemap(faces, &cube_map_texture);
+    var floor_texture: gl.Uint = undefined;
+    try loadTexture(marble_path, &cube_texture);
+    try loadTexture(metal_path, &floor_texture);
 
     // shader configuration
     // --------------------
     shader.use();
     shader.setInt("texture1", 0);
-
-    skybox_shader.use();
-    skybox_shader.setInt("skybox", 0);
 
     // Buffer to store Model matrix
     var model: [16]f32 = undefined;
@@ -247,46 +209,34 @@ pub fn main() !void {
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        // draw scene as normal
         shader.use();
-
-        zm.storeMat(&model, zm.identity());
+        zm.storeMat(&model, zm.translation(-1.0, 0.0, -1.0));
         shader.setMat4f("model", model);
-
-        var viewM = camera.getViewMatrix();
+        const viewM = camera.getViewMatrix();
         zm.storeMat(&view, viewM);
         shader.setMat4f("view", view);
-
-        // view/projection transformations
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
         const projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(camera.zoom), aspect_ratio, 0.1, 100.0);
         zm.storeMat(&projection, projectionM);
         shader.setMat4f("projection",  projection);
-
         // cubes
         gl.bindVertexArray(cubeVAO);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, cube_texture);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
-        gl.bindVertexArray(0);
-
-        // draw skybox as last
-        gl.depthFunc(gl.LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-        skybox_shader.use();
-        viewM = zm.loadMat34(&view);
-        zm.storeMat(&view, viewM);
-        skybox_shader.setMat4f("view", view);
-        skybox_shader.setMat4f("projection", projection);
-
-        // skybox cube
-        gl.bindVertexArray(skyboxVAO);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, cube_map_texture);
+        zm.storeMat(&model, zm.mul(zm.identity(), zm.translation(2.0, 0.0, 0.0)));
+        shader.setMat4f("model", model);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
+        // floor
+        gl.bindVertexArray(planeVAO);
+        gl.bindTexture(gl.TEXTURE_2D, floor_texture);
+        shader.setMat4f("model",  zm.matToArr(zm.identity()));
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
         gl.bindVertexArray(0);
-        gl.depthFunc(gl.LESS); // set depth function back to default
 
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
         window.swapBuffers();
         glfw.pollEvents();
     }
