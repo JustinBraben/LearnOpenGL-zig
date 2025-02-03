@@ -68,8 +68,8 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "assets/6.0.multiple_lights_vert.glsl", "assets/6.0.multiple_lights_frag.glsl");
-    var lighting_cube_shader: Shader = Shader.create(arena, "assets/1.1.light_cube_vert.glsl", "assets/1.1.light_cube_frag.glsl");
+    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/6.1.multiple_lights/6.1.multiple_lights.vs", "src/2.lighting/6.1.multiple_lights/6.1.multiple_lights.fs");
+    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/6.1.multiple_lights/6.1.light_cube.vs", "src/2.lighting/6.1.multiple_lights/6.1.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -185,8 +185,8 @@ pub fn main() !void {
     defer zstbi.deinit();
     zstbi.setFlipVerticallyOnLoad(true);
 
-    const diffuse_map_path: [:0]const u8 = "assets/container2.png";
-    const specular_map_path: [:0]const u8 = "assets/container2_specular.png";
+    const diffuse_map_path: [:0]const u8 = "resources/textures/container2.png";
+    const specular_map_path: [:0]const u8 = "resources/textures/container2_specular.png";
 
     // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------

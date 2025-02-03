@@ -151,8 +151,8 @@ const lighting = [_][]const u8{
     "5.2.light_casters_point/light_casters_point",
     "5.3.light_casters_spot/light_casters_spot",
     "5.4.light_casters_spot_soft/light_casters_spot_soft",
-    "6.0.multiple_lights/multiple_lights",
-    "6.1.multiple_lights_exercise1/multiple_lights_exercise1",
+    "6.1.multiple_lights/multiple_lights",
+    "6.2.multiple_lights_exercise1/multiple_lights_exercise1",
 };
 
 const model_loading = [_][]const u8{
