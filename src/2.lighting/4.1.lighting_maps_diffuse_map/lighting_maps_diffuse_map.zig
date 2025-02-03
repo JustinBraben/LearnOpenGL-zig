@@ -73,8 +73,8 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "assets/4.1.lighting_maps_vert.glsl", "assets/4.1.lighting_maps_frag.glsl");
-    var lighting_cube_shader: Shader = Shader.create(arena, "assets/1.1.light_cube_vert.glsl", "assets/1.1.light_cube_frag.glsl");
+    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/4.1.lighting_maps_diffuse_map/4.1.lighting_maps.vs", "src/2.lighting/4.1.lighting_maps_diffuse_map/4.1.lighting_maps.fs");
+    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/4.1.lighting_maps_diffuse_map/4.1.light_cube.vs", "src/2.lighting/4.1.lighting_maps_diffuse_map/4.1.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -168,7 +168,7 @@ pub fn main() !void {
     defer zstbi.deinit();
     zstbi.setFlipVerticallyOnLoad(true);
 
-    const diffuse_map_path: [:0]const u8 = "assets/container2.png";
+    const diffuse_map_path: [:0]const u8 = "resources/textures/container2.png";
 
     // Create and bind texture1 resource
     var diffuse_map_texture: gl.Uint = undefined;
@@ -205,6 +205,12 @@ pub fn main() !void {
         // ------
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        const radius: f32 = 5.0; // Distance from the center
+        const speed: f32 = 1.0; // Speed of rotation
+        light_position[0] = zm.sin(current_frame * speed) * radius; // X coordinate
+        light_position[1] = zm.sin(current_frame * speed) * radius; // Y coordinate
+        light_position[2] = zm.cos(current_frame * speed) * radius; // Z coordinate
 
         // be sure to activate shader when setting uniforms/drawing objects
         lighting_shader.use();
