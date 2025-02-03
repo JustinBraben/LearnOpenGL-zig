@@ -37,7 +37,7 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var shader_program: Shader = Shader.create(arena, "assets/4.2.vertexShaderTexture.glsl", "assets/4.2.fragmentShaderTexture.glsl");
+    var shader_program: Shader = Shader.create(arena, "src/1.getting_started/4.2.textures_combined/4.2.texture.vs", "src/1.getting_started/4.2.textures_combined/4.2.texture.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -93,11 +93,11 @@ pub fn main() !void {
     defer zstbi.deinit();
     zstbi.setFlipVerticallyOnLoad(true);
 
-    const image1_path: [:0]const u8 = "assets/container.jpg";
+    const image1_path: [:0]const u8 = "resources/textures/container.jpg";
     var image1 = try zstbi.Image.loadFromFile(image1_path, 0);
     defer image1.deinit();
 
-    const image2_path: [:0]const u8 = "assets/awesomeface.png";
+    const image2_path: [:0]const u8 = "resources/textures/awesomeface.png";
     var image2 = try zstbi.Image.loadFromFile(image2_path, 0);
     defer image2.deinit();
 
