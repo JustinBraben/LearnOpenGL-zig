@@ -69,8 +69,8 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "assets/3.2.materials_vert.glsl", "assets/3.2.materials_frag.glsl");
-    var lighting_cube_shader: Shader = Shader.create(arena, "assets/1.1.light_cube_vert.glsl", "assets/1.1.light_cube_frag.glsl");
+    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/3.2.materials_exercise1/3.2.materials.vs", "src/2.lighting/3.2.materials_exercise1/3.2.materials.fs");
+    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/3.2.materials_exercise1/3.2.light_cube.vs", "src/2.lighting/3.2.materials_exercise1/3.2.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -176,8 +176,11 @@ pub fn main() !void {
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-        light_position[0] = 4.0 + zm.sin(@as(f32, @floatCast(glfw.getTime())) * 2.0);
-        light_position[1] = 4.0 + zm.sin(@as(f32, @floatCast(glfw.getTime())) / 2.0) * 1.0;
+        const radius: f32 = 5.0; // Distance from the center
+        const speed: f32 = 1.0; // Speed of rotation
+        light_position[0] = zm.sin(current_frame * speed) * radius; // X coordinate
+        light_position[1] = zm.sin(current_frame * speed) * radius; // Y coordinate
+        light_position[2] = zm.cos(current_frame * speed) * radius; // Z coordinate
 
         // be sure to activate shader when setting uniforms/drawing objects
         lighting_shader.use();
