@@ -23,6 +23,7 @@ pub fn build(b: *std.Build) void {
     camera_module.addImport("zmath", zmath.module("root"));
     camera_module.addImport("common", common_module);
 
+    // Build getting_started
     const getting_started_step = b.step("getting_started", "Build getting_started examples");
     inline for (getting_started) |example_name| {
         var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
@@ -58,8 +59,42 @@ pub fn build(b: *std.Build) void {
         run_step.dependOn(&run_cmd.step);
     }
 
+    const lighting_step = b.step("lighting", "Build lighting examples");
+    inline for (lighting) |example_name| {
+        var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
+        const actual_example_name = example_name_split_iter.next().?;
+        const example = b.addExecutable(.{
+            .name = actual_example_name,
+            .root_source_file = b.path("src/2.lighting/" ++ example_name ++ ".zig"),
+            .target = target,
+            .optimize = optimize,
+        });
+
+        // Add imports and/or link libraries if necessary
+        example.root_module.addImport("zglfw", zglfw.module("root"));
+        example.linkLibrary(zglfw.artifact("glfw"));
+        example.root_module.addImport("zopengl", zopengl.module("root"));
+        example.root_module.addImport("zstbi", zstbi.module("root"));
+        example.linkLibrary(zstbi.artifact("zstbi"));
+        example.root_module.addImport("zmath", zmath.module("root"));
+        example.root_module.addImport("Shader", shader_module);
+        example.root_module.addImport("common", common_module);
+        example.root_module.addImport("Camera", camera_module);
+
+        const compile_step = b.step(example_name, "Build " ++ example_name);
+        compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
+        b.getInstallStep().dependOn(compile_step);
+
+        const run_cmd = b.addRunArtifact(example);
+        run_cmd.step.dependOn(compile_step);
+
+        const run_step = b.step("run-" ++ example_name, "Run " ++ example_name);
+        run_step.dependOn(&run_cmd.step);
+    }
+
     const all_step = b.step("all", "Build everything and runs all tests");
     all_step.dependOn(getting_started_step);
+    all_step.dependOn(lighting_step);
 
     b.default_step.dependOn(all_step);
 }
@@ -99,19 +134,19 @@ const getting_started = [_][]const u8{
 };
 
 const lighting = [_][]const u8{
-    "1.1.light_cube/light_cube",
-    "2.1.basic_lighting_diffuse/basic_lighting_diffuse",
-    "2.2.basic_lighting_specular/basic_lighting_specular",
-    "3.1.materials/materials",
-    "3.2.materials_exercise1/materials_exercise1",
-    "4.1.lighting_map_diffuse/lighting_map_diffuse",
-    "4.2.lighting_maps_specular/lighting_maps_specular",
-    "5.1.light_casters_directional/light_casters_directional",
-    "5.2.light_casters_point/light_casters_point",
-    "5.3.light_casters_spot/light_casters_spot",
-    "5.4.light_casters_spot_soft/light_casters_spot_soft",
-    "6.0.multiple_lights/multiple_lights",
-    "6.1.multiple_lights_exercise1/multiple_lights_exercise1",
+    "1.colors/colors",
+    // "2.1.basic_lighting_diffuse/basic_lighting_diffuse",
+    // "2.2.basic_lighting_specular/basic_lighting_specular",
+    // "3.1.materials/materials",
+    // "3.2.materials_exercise1/materials_exercise1",
+    // "4.1.lighting_map_diffuse/lighting_map_diffuse",
+    // "4.2.lighting_maps_specular/lighting_maps_specular",
+    // "5.1.light_casters_directional/light_casters_directional",
+    // "5.2.light_casters_point/light_casters_point",
+    // "5.3.light_casters_spot/light_casters_spot",
+    // "5.4.light_casters_spot_soft/light_casters_spot_soft",
+    // "6.0.multiple_lights/multiple_lights",
+    // "6.1.multiple_lights_exercise1/multiple_lights_exercise1",
 };
 
 const model_loading = [_][]const u8{
