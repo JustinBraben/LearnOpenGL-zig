@@ -198,5 +198,6 @@ const advanced_opengl = [_][]const u8{
     "1.1.depth_testing/depth_testing",
     "1.2.depth_testing_view/depth_testing_view",
     "2.stencil_testing/stencil_testing",
+    "3.1.blending_discard/blending_discard",
     "6.1.cubemaps_skybox/cubemaps_skybox",
 };
