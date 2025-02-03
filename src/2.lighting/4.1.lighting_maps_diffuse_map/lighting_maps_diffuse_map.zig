@@ -7,7 +7,6 @@ const zm = @import("zmath");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
 const Camera = @import("Camera");
-const common = @import("common");
 
 pub const ConfigOptions = struct {
     width: i32 = 1280,
@@ -15,10 +14,6 @@ pub const ConfigOptions = struct {
     gl_major: i32 = 4,
     gl_minor: i32 = 1,
 };
-
-// Create the transformation matrices:
-// Degree to radians conversion factor
-const rad_conversion = common.RAD_CONVERSION;
 
 // Camera
 const camera_pos = zm.loadArr3(.{ 0.0, 0.0, 5.0 });

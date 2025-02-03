@@ -6,7 +6,6 @@ const zstbi = @import("zstbi");
 const zm = @import("zmath");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
-const common = @import("common");
 
 const SRC_WIDTH = 800;
 const SRC_HEIGHT = 600;
@@ -199,10 +198,6 @@ pub fn main() !void {
     shader_program.setInt("texture1", 0);
     shader_program.setInt("texture2", 1);
 
-    // Create the transformation matrices:
-    // Degree to radians conversion factor
-    const rad_conversion = math.pi / 180.0;
-
     // Buffer to store Model matrix
     var model: [16]f32 = undefined;
 
@@ -232,7 +227,7 @@ pub fn main() !void {
         var projectionM = zm.identity();
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
-        projectionM = zm.perspectiveFovRhGl(45.0 * rad_conversion, aspect_ratio, 0.1, 100.0);
+        projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(45.0), aspect_ratio, 0.1, 100.0);
         var projection: [16]f32 = undefined;
         zm.storeMat(&projection, projectionM);
         shader_program.setMat4f("projection", projection);
@@ -246,7 +241,7 @@ pub fn main() !void {
             }
             const cube_rot = zm.matFromAxisAngle(
                 zm.f32x4(1.0, 0.3, 0.5, 1.0),
-                angle * rotation_direction * rad_conversion,
+                math.degreesToRadians(angle * rotation_direction),
             );
             const modelM = zm.mul(cube_rot, cube_trans);
             zm.storeMat(&model, modelM);

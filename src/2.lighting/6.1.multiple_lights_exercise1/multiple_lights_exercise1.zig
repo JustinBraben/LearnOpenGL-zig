@@ -7,7 +7,6 @@ const zm = @import("zmath");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
 const Camera = @import("Camera");
-const common = @import("common");
 
 pub const ConfigOptions = struct {
     width: i32 = 1280,
@@ -293,7 +292,7 @@ pub fn main() !void {
             const cube_trans = zm.translation(cube_position[0], cube_position[1], cube_position[2]);
             const angle = 20.0 * @as(f32, @floatFromInt(idx));
             const rotation_direction = (((@mod(@as(f32, @floatFromInt(idx + 1)), 2.0)) * 2.0) - 1.0);
-            const cube_rot = zm.matFromAxisAngle(zm.f32x4(1.0, 0.3, 0.5, 1.0), angle * rotation_direction * common.RAD_CONVERSION);
+            const cube_rot = zm.matFromAxisAngle(zm.f32x4(1.0, 0.3, 0.5, 1.0), math.degreesToRadians(angle * rotation_direction));
             const modelM = zm.mul(cube_rot, cube_trans);
             zm.storeMat(&model, modelM);
             lighting_shader.setMat4f("model", model);

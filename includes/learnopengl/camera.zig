@@ -3,7 +3,6 @@ const std = @import("std");
 const math = std.math;
 const zm = @import("zmath");
 const Shader = @import("Shader");
-const common = @import("common");
 
 const Camera = @This();
 
@@ -110,9 +109,9 @@ pub fn processMouseScroll(self: *Camera, yoffset: f64) void {
 fn updateCameraVectors(self: *Camera) void {
     // calculate the new Front vector
     var front: zm.F32x4 = undefined;
-    front[0] = @cos(self.yaw * common.RAD_CONVERSION) * @cos(self.pitch * common.RAD_CONVERSION);
-    front[1] = @sin(self.pitch * common.RAD_CONVERSION);
-    front[2] = @sin(self.yaw * common.RAD_CONVERSION) * @cos(self.pitch * common.RAD_CONVERSION);
+    front[0] = @cos(math.degreesToRadians(self.yaw)) * @cos(math.degreesToRadians(self.pitch));
+    front[1] = @sin(math.degreesToRadians(self.pitch));
+    front[2] = @sin(math.degreesToRadians(self.yaw)) * @cos(math.degreesToRadians(self.pitch));
     self.front = front;
     // also re-calculate the Right and Up vector
     self.right = zm.normalize3(zm.cross3(self.front, WORLD_UP));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

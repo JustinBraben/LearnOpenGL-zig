@@ -7,7 +7,6 @@ const zm = @import("zmath");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
 const Camera = @import("Camera");
-const common = @import("common");
 
 pub const ConfigOptions = struct {
     width: i32 = 1280,
@@ -15,10 +14,6 @@ pub const ConfigOptions = struct {
     gl_major: i32 = 4,
     gl_minor: i32 = 1,
 };
-
-// Create the transformation matrices:
-// Degree to radians conversion factor
-const rad_conversion = common.RAD_CONVERSION;
 
 // Camera
 const camera_pos = zm.loadArr3(.{ 0.0, 0.0, 5.0 });
@@ -73,8 +68,8 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "assets/5.1.light_casters_vert.glsl", "assets/5.1.light_casters_frag.glsl");
-    var lighting_cube_shader: Shader = Shader.create(arena, "assets/1.1.light_cube_vert.glsl", "assets/1.1.light_cube_frag.glsl");
+    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/5.1.light_casters_directional/5.1.light_casters.vs", "src/2.lighting/5.1.light_casters_directional/5.1.light_casters.fs");
+    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/5.1.light_casters_directional/5.1.light_cube.vs", "src/2.lighting/5.1.light_casters_directional/5.1.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -181,8 +176,8 @@ pub fn main() !void {
     defer zstbi.deinit();
     zstbi.setFlipVerticallyOnLoad(true);
 
-    const diffuse_map_path: [:0]const u8 = "assets/container2.png";
-    const specular_map_path: [:0]const u8 = "assets/container2_specular.png";
+    const diffuse_map_path: [:0]const u8 = "resources/textures/container2.png";
+    const specular_map_path: [:0]const u8 = "resources/textures/container2_specular.png";
 
     // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
@@ -240,7 +235,7 @@ pub fn main() !void {
         // view/projection transformations
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
-        const projectionM = zm.perspectiveFovRhGl(common.radians(camera.zoom), aspect_ratio, 0.1, 100.0);
+        const projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(camera.zoom), aspect_ratio, 0.1, 100.0);
         zm.storeMat(&projection, projectionM);
         lighting_shader.setMat4f("projection", projection);
         const viewM = camera.getViewMatrix();
@@ -268,7 +263,7 @@ pub fn main() !void {
             const cube_trans = zm.translation(cube_position[0], cube_position[1], cube_position[2]);
             const angle = 20.0 * @as(f32, @floatFromInt(idx));
             const rotation_direction = (((@mod(@as(f32, @floatFromInt(idx + 1)), 2.0)) * 2.0) - 1.0);
-            const cube_rot = zm.matFromAxisAngle(zm.f32x4(1.0, 0.3, 0.5, 1.0), angle * rotation_direction * common.RAD_CONVERSION);
+            const cube_rot = zm.matFromAxisAngle(zm.f32x4(1.0, 0.3, 0.5, 1.0), math.degreesToRadians(angle * rotation_direction));
             const modelM = zm.mul(cube_rot, cube_trans);
             zm.storeMat(&model, modelM);
             lighting_shader.setMat4f("model", model);

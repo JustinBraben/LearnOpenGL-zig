@@ -6,7 +6,6 @@ const zstbi = @import("zstbi");
 const zm = @import("zmath");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
-const common = @import("common");
 
 const SRC_WIDTH = 800;
 const SRC_HEIGHT = 600;
@@ -158,10 +157,6 @@ pub fn main() !void {
     shader_program.setInt("texture1", 0);
     shader_program.setInt("texture2", 1);
 
-    // Create the transformation matrices:
-    // Degree to radians conversion factor
-    const rad_conversion = math.pi / 180.0;
-
     while (!window.shouldClose()) {
         if (window.getKey(.escape) == .press) window.setShouldClose(true);
 
@@ -181,11 +176,11 @@ pub fn main() !void {
         var modelM = zm.identity();
         var viewM = zm.identity();
         var projectionM = zm.identity();
-        modelM = zm.mul(modelM, zm.rotationX(-55.0 * rad_conversion));
+        modelM = zm.mul(modelM, zm.rotationX(math.degreesToRadians(-55.0)));
         viewM = zm.translation(0.0, 0.0, -3.0);
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
-        projectionM = zm.perspectiveFovRhGl(45.0 * rad_conversion, aspect_ratio, 0.1, 100.0);
+        projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(45.0), aspect_ratio, 0.1, 100.0);
         var model: [16]f32 = undefined;
         var view: [16]f32 = undefined;
         var projection: [16]f32 = undefined;

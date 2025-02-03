@@ -6,14 +6,9 @@ const zstbi = @import("zstbi");
 const zm = @import("zmath");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
-const common = @import("common");
 
 const SRC_WIDTH = 1080;
 const SRC_HEIGHT = 800;
-
-// Create the transformation matrices:
-// Degree to radians conversion factor
-const rad_conversion = math.pi / 180.0;
 
 // Camera
 var cameraPos = zm.f32x4(0.0, 0.0, 3.0, 1.0);
@@ -254,7 +249,7 @@ pub fn main() !void {
 
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
-        const projectionM = zm.perspectiveFovRhGl(fov * rad_conversion, aspect_ratio, 0.1, 100.0);
+        const projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(45.0), aspect_ratio, 0.1, 100.0);
         zm.storeMat(&projection, projectionM);
         shader_program.setMat4f("projection", projection);
 
@@ -334,9 +329,9 @@ fn mouse_callback(window: *glfw.Window, xposIn: f64, yposIn: f64) callconv(.C) v
     if (pitch < -89.0) pitch = -89.0;
 
     const front = zm.f32x4(
-        math.cos(yaw * rad_conversion) * math.cos(pitch * rad_conversion), 
-        math.sin(pitch * rad_conversion), 
-        math.sin(yaw * rad_conversion) * math.cos(pitch * rad_conversion), 
+        math.cos(math.degreesToRadians(yaw)) * math.cos(math.degreesToRadians(pitch)), 
+        math.sin(math.degreesToRadians(pitch)), 
+        math.sin(math.degreesToRadians(yaw)) * math.cos(math.degreesToRadians(pitch)), 
         1.0);
     cameraFront = zm.normalize3(front);
 }

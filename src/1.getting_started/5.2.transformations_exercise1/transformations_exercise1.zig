@@ -5,7 +5,6 @@ const zstbi = @import("zstbi");
 const zm = @import("zmath");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
-const common = @import("common");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
