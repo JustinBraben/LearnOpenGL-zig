@@ -224,7 +224,7 @@ pub fn main() !void {
         // view/projection transformations
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
-        const projectionM = zm.perspectiveFovRhGl(common.radians(camera.zoom), aspect_ratio, 0.1, 100.0);
+        const projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(camera.zoom), aspect_ratio, 0.1, 100.0);
         zm.storeMat(&projection, projectionM);
         lighting_shader.setMat4f("projection", projection);
         const viewM = camera.getViewMatrix();

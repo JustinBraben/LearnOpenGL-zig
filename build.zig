@@ -8,10 +8,11 @@ pub fn build(b: *std.Build) void {
         .target = target,
     });
 
-    const zopengl = b.dependency("zopengl", .{});
-    const zstbi = b.dependency("zstbi", .{});
-    const zmath = b.dependency("zmath", .{});
+    const zopengl = b.dependency("zopengl", .{ .target = target });
+    const zstbi = b.dependency("zstbi", .{ .target = target });
+    const zmath = b.dependency("zmath", .{ .target = target });
     const zgui = b.dependency("zgui", .{
+        .target = target,
         .backend = .glfw_opengl3,
     });
 
