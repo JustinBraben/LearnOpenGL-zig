@@ -144,6 +144,8 @@ const lighting = [_][]const u8{
     "3.2.materials_exercise1/materials_exercise1",
     "4.1.lighting_maps_diffuse_map/lighting_maps_diffuse_map",
     "4.2.lighting_maps_specular_map/lighting_maps_specular_map",
+    "4.3.lighting_maps_exercise2/lighting_maps_exercise2",
+    "4.4.lighting_maps_exercise4/lighting_maps_exercise4",
     "5.1.light_casters_directional/light_casters_directional",
     "5.2.light_casters_point/light_casters_point",
     "5.3.light_casters_spot/light_casters_spot",
