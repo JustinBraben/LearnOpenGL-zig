@@ -93,9 +93,44 @@ pub fn build(b: *std.Build) void {
         run_step.dependOn(&run_cmd.step);
     }
 
+    const advanced_opengl_step = b.step("advanced_opengl", "Build lighting examples");
+    inline for (advanced_opengl) |example_name| {
+        var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
+        const actual_example_name = example_name_split_iter.next().?;
+        const example = b.addExecutable(.{
+            .name = actual_example_name,
+            .root_source_file = b.path("src/4.advanced_opengl/" ++ example_name ++ ".zig"),
+            .target = target,
+            .optimize = optimize,
+        });
+
+        // Add imports and/or link libraries if necessary
+        example.root_module.addImport("zglfw", zglfw.module("root"));
+        example.linkLibrary(zglfw.artifact("glfw"));
+        example.root_module.addImport("zopengl", zopengl.module("root"));
+        example.root_module.addImport("zstbi", zstbi.module("root"));
+        example.linkLibrary(zstbi.artifact("zstbi"));
+        example.root_module.addImport("zmath", zmath.module("root"));
+        example.root_module.addImport("Shader", shader_module);
+        example.root_module.addImport("common", common_module);
+        example.root_module.addImport("Camera", camera_module);
+
+        const compile_step = b.step(example_name, "Build " ++ example_name);
+        compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
+        b.getInstallStep().dependOn(compile_step);
+
+        const run_cmd = b.addRunArtifact(example);
+        run_cmd.step.dependOn(compile_step);
+
+        const run_step = b.step("run-" ++ example_name, "Run " ++ example_name);
+        run_step.dependOn(&run_cmd.step);
+    }
+
     const all_step = b.step("all", "Build everything and runs all tests");
     all_step.dependOn(getting_started_step);
     all_step.dependOn(lighting_step);
+    // TODO: Add model loading step
+    all_step.dependOn(advanced_opengl_step);
 
     b.default_step.dependOn(all_step);
 }
@@ -160,6 +195,6 @@ const model_loading = [_][]const u8{
 };
 
 const advanced_opengl = [_][]const u8{
-    "1_1_depth_testing",
-    "6_1_cubemaps_skybox",
+    "1.1.depth_testing/depth_testing",
+    "6.1.cubemaps_skybox/cubemaps_skybox",
 };
