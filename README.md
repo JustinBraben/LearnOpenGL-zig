@@ -6,7 +6,7 @@ Rewrite of [LearnOpenGL example source code](https://github.com/JoeyDeVries/Lear
 
 ## Prerequisites
 
-First of all you need Zig installed on your computer.
+First of all you'll need to have Zig `0.14.0-dev.2577+271452d22` on your system.
 
 ## Build the source code
 
