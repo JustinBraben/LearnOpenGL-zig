@@ -66,55 +66,57 @@ pub fn main() !void {
     // configure global opengl state
     // -----------------------------
     gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.ALWAYS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.FRONT);
+    gl.frontFace(gl.CW);
 
     // build and compile shaders
     // -------------------------
     var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/1.1.depth_testing/1.1.depth_testing.vs", "src/4.advanced_opengl/1.1.depth_testing/1.1.depth_testing.fs");
 
-    const cubeVertices = [_]gl.Float{
-        // positions       // texture Coords
-        -0.5, -0.5, -0.5,  0.0, 0.0,
-         0.5, -0.5, -0.5,  1.0, 0.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-        -0.5,  0.5, -0.5,  0.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 0.0,
-
-        -0.5, -0.5,  0.5,  0.0, 0.0,
-         0.5, -0.5,  0.5,  1.0, 0.0,
-         0.5,  0.5,  0.5,  1.0, 1.0,
-         0.5,  0.5,  0.5,  1.0, 1.0,
-        -0.5,  0.5,  0.5,  0.0, 1.0,
-        -0.5, -0.5,  0.5,  0.0, 0.0,
-
-        -0.5,  0.5,  0.5,  1.0, 0.0,
-        -0.5,  0.5, -0.5,  1.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 1.0,
-        -0.5, -0.5,  0.5,  0.0, 0.0,
-        -0.5,  0.5,  0.5,  1.0, 0.0,
-
-         0.5,  0.5,  0.5,  1.0, 0.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-         0.5, -0.5, -0.5,  0.0, 1.0,
-         0.5, -0.5, -0.5,  0.0, 1.0,
-         0.5, -0.5,  0.5,  0.0, 0.0,
-         0.5,  0.5,  0.5,  1.0, 0.0,
-
-        -0.5, -0.5, -0.5,  0.0, 1.0,
-         0.5, -0.5, -0.5,  1.0, 1.0,
-         0.5, -0.5,  0.5,  1.0, 0.0,
-         0.5, -0.5,  0.5,  1.0, 0.0,
-        -0.5, -0.5,  0.5,  0.0, 0.0,
-        -0.5, -0.5, -0.5,  0.0, 1.0,
-
-        -0.5,  0.5, -0.5,  0.0, 1.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-         0.5,  0.5,  0.5,  1.0, 0.0,
-         0.5,  0.5,  0.5,  1.0, 0.0,
-        -0.5,  0.5,  0.5,  0.0, 0.0,
-        -0.5,  0.5, -0.5,  0.0, 1.0
+    const vertices = [_]gl.Float{
+        // back face
+        -0.5, -0.5, -0.5,  0.0, 0.0, // bottom-left
+        0.5, -0.5, -0.5,  1.0, 0.0, // bottom-right    
+        0.5,  0.5, -0.5,  1.0, 1.0, // top-right              
+        0.5,  0.5, -0.5,  1.0, 1.0, // top-right
+        -0.5,  0.5, -0.5,  0.0, 1.0, // top-left
+        -0.5, -0.5, -0.5,  0.0, 0.0, // bottom-left                
+        // front face
+        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-left
+        0.5,  0.5,  0.5,  1.0, 1.0, // top-right
+        0.5, -0.5,  0.5,  1.0, 0.0, // bottom-right        
+        0.5,  0.5,  0.5,  1.0, 1.0, // top-right
+        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-left
+        -0.5,  0.5,  0.5,  0.0, 1.0, // top-left        
+        // left face
+        -0.5,  0.5,  0.5,  1.0, 0.0, // top-right
+        -0.5, -0.5, -0.5,  0.0, 1.0, // bottom-left
+        -0.5,  0.5, -0.5,  1.0, 1.0, // top-left       
+        -0.5, -0.5, -0.5,  0.0, 1.0, // bottom-left
+        -0.5,  0.5,  0.5,  1.0, 0.0, // top-right
+        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-right
+        // right face
+        0.5,  0.5,  0.5,  1.0, 0.0, // top-left
+        0.5,  0.5, -0.5,  1.0, 1.0, // top-right      
+        0.5, -0.5, -0.5,  0.0, 1.0, // bottom-right          
+        0.5, -0.5, -0.5,  0.0, 1.0, // bottom-right
+        0.5, -0.5,  0.5,  0.0, 0.0, // bottom-left
+        0.5,  0.5,  0.5,  1.0, 0.0, // top-left
+        // bottom face          
+        -0.5, -0.5, -0.5,  0.0, 1.0, // top-right
+        0.5, -0.5,  0.5,  1.0, 0.0, // bottom-left
+        0.5, -0.5, -0.5,  1.0, 1.0, // top-left        
+        0.5, -0.5,  0.5,  1.0, 0.0, // bottom-left
+        -0.5, -0.5, -0.5,  0.0, 1.0, // top-right
+        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-right
+        // top face
+        -0.5,  0.5, -0.5,  0.0, 1.0, // top-left
+        0.5,  0.5, -0.5,  1.0, 1.0, // top-right
+        0.5,  0.5,  0.5,  1.0, 0.0, // bottom-right                 
+        0.5,  0.5,  0.5,  1.0, 0.0, // bottom-right
+        -0.5,  0.5,  0.5,  0.0, 0.0, // bottom-left  
+        -0.5,  0.5, -0.5,  0.0, 1.0  // top-left
     };
 
     const planeVertices = [_]gl.Float{
@@ -140,7 +142,7 @@ pub fn main() !void {
     defer gl.deleteBuffers(1, &cubeVBO);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
-    gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * cubeVertices.len, &cubeVertices, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * vertices.len, &vertices, gl.STATIC_DRAW);
     gl.bindVertexArray(cubeVAO);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), null);
