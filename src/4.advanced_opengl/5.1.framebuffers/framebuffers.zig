@@ -66,9 +66,6 @@ pub fn main() !void {
     // configure global opengl state
     // -----------------------------
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.FRONT);
-    gl.frontFace(gl.CW);
 
     // build and compile shaders
     // -------------------------
@@ -76,48 +73,48 @@ pub fn main() !void {
     var screenShader: Shader = Shader.create(arena, "src/4.advanced_opengl/5.1.framebuffers/5.1.framebuffers_screen.vs", "src/4.advanced_opengl/5.1.framebuffers/5.1.framebuffers_screen.fs");
 
     const vertices = [_]gl.Float{
-        // back face
-        -0.5, -0.5, -0.5,  0.0, 0.0, // bottom-left
-        0.5, -0.5, -0.5,  1.0, 0.0, // bottom-right    
-        0.5,  0.5, -0.5,  1.0, 1.0, // top-right              
-        0.5,  0.5, -0.5,  1.0, 1.0, // top-right
-        -0.5,  0.5, -0.5,  0.0, 1.0, // top-left
-        -0.5, -0.5, -0.5,  0.0, 0.0, // bottom-left                
-        // front face
-        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-left
-        0.5,  0.5,  0.5,  1.0, 1.0, // top-right
-        0.5, -0.5,  0.5,  1.0, 0.0, // bottom-right        
-        0.5,  0.5,  0.5,  1.0, 1.0, // top-right
-        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-left
-        -0.5,  0.5,  0.5,  0.0, 1.0, // top-left        
-        // left face
-        -0.5,  0.5,  0.5,  1.0, 0.0, // top-right
-        -0.5, -0.5, -0.5,  0.0, 1.0, // bottom-left
-        -0.5,  0.5, -0.5,  1.0, 1.0, // top-left       
-        -0.5, -0.5, -0.5,  0.0, 1.0, // bottom-left
-        -0.5,  0.5,  0.5,  1.0, 0.0, // top-right
-        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-right
-        // right face
-        0.5,  0.5,  0.5,  1.0, 0.0, // top-left
-        0.5,  0.5, -0.5,  1.0, 1.0, // top-right      
-        0.5, -0.5, -0.5,  0.0, 1.0, // bottom-right          
-        0.5, -0.5, -0.5,  0.0, 1.0, // bottom-right
-        0.5, -0.5,  0.5,  0.0, 0.0, // bottom-left
-        0.5,  0.5,  0.5,  1.0, 0.0, // top-left
-        // bottom face          
-        -0.5, -0.5, -0.5,  0.0, 1.0, // top-right
-        0.5, -0.5,  0.5,  1.0, 0.0, // bottom-left
-        0.5, -0.5, -0.5,  1.0, 1.0, // top-left        
-        0.5, -0.5,  0.5,  1.0, 0.0, // bottom-left
-        -0.5, -0.5, -0.5,  0.0, 1.0, // top-right
-        -0.5, -0.5,  0.5,  0.0, 0.0, // bottom-right
-        // top face
-        -0.5,  0.5, -0.5,  0.0, 1.0, // top-left
-        0.5,  0.5, -0.5,  1.0, 1.0, // top-right
-        0.5,  0.5,  0.5,  1.0, 0.0, // bottom-right                 
-        0.5,  0.5,  0.5,  1.0, 0.0, // bottom-right
-        -0.5,  0.5,  0.5,  0.0, 0.0, // bottom-left  
-        -0.5,  0.5, -0.5,  0.0, 1.0  // top-left
+        // positions          // texture Coords
+        -0.5, -0.5, -0.5,  0.0, 0.0,
+         0.5, -0.5, -0.5,  1.0, 0.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+        -0.5,  0.5, -0.5,  0.0, 1.0,
+        -0.5, -0.5, -0.5,  0.0, 0.0,
+
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+         0.5, -0.5,  0.5,  1.0, 0.0,
+         0.5,  0.5,  0.5,  1.0, 1.0,
+         0.5,  0.5,  0.5,  1.0, 1.0,
+        -0.5,  0.5,  0.5,  0.0, 1.0,
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+
+        -0.5,  0.5,  0.5,  1.0, 0.0,
+        -0.5,  0.5, -0.5,  1.0, 1.0,
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+        -0.5,  0.5,  0.5,  1.0, 0.0,
+
+         0.5,  0.5,  0.5,  1.0, 0.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+         0.5, -0.5, -0.5,  0.0, 1.0,
+         0.5, -0.5, -0.5,  0.0, 1.0,
+         0.5, -0.5,  0.5,  0.0, 0.0,
+         0.5,  0.5,  0.5,  1.0, 0.0,
+
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+         0.5, -0.5, -0.5,  1.0, 1.0,
+         0.5, -0.5,  0.5,  1.0, 0.0,
+         0.5, -0.5,  0.5,  1.0, 0.0,
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+
+        -0.5,  0.5, -0.5,  0.0, 1.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+         0.5,  0.5,  0.5,  1.0, 0.0,
+         0.5,  0.5,  0.5,  1.0, 0.0,
+        -0.5,  0.5,  0.5,  0.0, 0.0,
+        -0.5,  0.5, -0.5,  0.0, 1.0
     };
 
     const planeVertices = [_]gl.Float{
@@ -188,10 +185,10 @@ pub fn main() !void {
     gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
     gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * quadVertices.len, &quadVertices, gl.STATIC_DRAW);
     gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), null);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, gl.FALSE, 4 * @sizeOf(gl.Float), null);
     gl.enableVertexAttribArray(1);
     const quad_texture_coords_offset: [*c]c_uint = (2 * @sizeOf(gl.Float));
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), quad_texture_coords_offset);
+    gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 4 * @sizeOf(gl.Float), quad_texture_coords_offset);
     gl.bindVertexArray(0);
 
     // zstbi: loading an image.
@@ -219,6 +216,7 @@ pub fn main() !void {
     // -------------------------
     var framebuffer: gl.Uint = undefined;
     gl.genFramebuffers(1, &framebuffer);
+    defer gl.deleteRenderbuffers(1, &framebuffer);
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     // create a color attachment texture
     var textureColorbuffer: gl.Uint = undefined;
@@ -231,6 +229,7 @@ pub fn main() !void {
     // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
     var rbo: gl.Uint = undefined;
     gl.genRenderbuffers(1, &rbo);
+    defer gl.deleteRenderbuffers(1, &rbo);
     gl.bindRenderbuffer(gl.RENDERBUFFER, rbo);
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, config.width, config.height); // use a single renderbuffer object for both a depth AND stencil buffer.
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, rbo); // now actually attach it
@@ -238,6 +237,9 @@ pub fn main() !void {
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE)
         std.debug.print("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n", .{});
     gl.bindFramebuffer(gl.FRAMEBUFFER, 0);
+
+    // draw as wireframe
+    // gl.polygonMode(gl.FRONT_AND_BACK, gl.LINE);
 
     // Buffer to store Model matrix
     var model: [16]f32 = undefined;
@@ -260,6 +262,12 @@ pub fn main() !void {
         // input
         // -----
         processInput(window, delta_time);
+
+        // render
+        // ------
+        // bind to framebuffer and draw scene as we normally would to color texture 
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        gl.enable(gl.DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
         // render
         // ------
@@ -291,6 +299,20 @@ pub fn main() !void {
         shader.setMat4f("model",  zm.matToArr(zm.identity()));
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         gl.bindVertexArray(0);
+
+        // now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+        gl.bindFramebuffer(gl.FRAMEBUFFER, 0);
+        gl.disable(gl.DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+        // clear all relevant buffers
+        // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+        gl.clearColor(1.0, 1.0, 1.0, 1.0); 
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        screenShader.use();
+        gl.bindVertexArray(quadVAO);
+        // use the color attachment texture as the texture of the quad plane
+        gl.bindTexture(gl.TEXTURE_2D, textureColorbuffer);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
