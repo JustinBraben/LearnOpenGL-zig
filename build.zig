@@ -203,4 +203,5 @@ const advanced_opengl = [_][]const u8{
     "4.face_culling_exercise1/face_culling_exercise1",
     "6.1.cubemaps_skybox/cubemaps_skybox",
     "5.1.framebuffers/framebuffers",
+    "5.2.framebuffers_exercise1/framebuffers_exercise1",
 };
