@@ -90,5 +90,8 @@ pub fn setVec3f(self: Shader, name: [*c]const u8, value: [3]f32) void {
 
 pub fn setMat4f(self: Shader, name: [*c]const u8, value: [16]f32) void {
     const matLoc = gl.getUniformLocation(self.ID, name);
+    if (matLoc == -1) {
+        std.debug.print("Warning: Uniform '{s}' not found in shader program.\n", .{name});
+    }
     gl.uniformMatrix4fv(matLoc, 1, gl.FALSE, &value);
 }
