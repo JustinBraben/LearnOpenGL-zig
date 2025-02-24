@@ -116,7 +116,7 @@ pub fn processMouseScroll(self: *Camera, yoffset: f64) void {
 }
 
 /// Calculates the front vector from the Camera's (updated) Euler Angles
-fn updateCameraVectors(self: *Camera) void {
+pub fn updateCameraVectors(self: *Camera) void {
     // Calculate the new front vector
     const pitch_rad = math.degreesToRadians(self.pitch);
     const yaw_rad = math.degreesToRadians(self.yaw);

@@ -263,6 +263,9 @@ pub fn main() !void {
         // -----
         processInput(window, delta_time);
 
+        // Store the original camera state
+        const original_yaw = camera.yaw;
+
         // first render pass: mirror texture.
         // bind to framebuffer and draw to color texture as we normally
         // would, but with the view camera reversed.
@@ -276,16 +279,14 @@ pub fn main() !void {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         shader.use();
-        const viewM = camera.getViewMatrix();
-        zm.storeMat(&view, viewM);
 
-        // // TODO: Rotate camera's yaw 180 degrees for rear view framebuffer
-        // camera.yaw += 180.0;
-        // camera.processMouseMovement(0, 0, false);
-        // const mirror_view = camera.getViewMatrix();
-        // camera.yaw -= 180.0;
-        // camera.processMouseMovement(0, 0, true);
-        // zm.storeMat(&rear_view, mirror_view);
+        // TODO: Rotate camera's yaw 180 degrees for rear view framebuffer
+        camera.yaw = original_yaw + 180.0;
+        camera.updateCameraVectors();
+        const mirror_view = camera.getViewMatrix();
+        zm.storeMat(&view, mirror_view);
+        camera.yaw = original_yaw;
+        camera.updateCameraVectors();
 
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
@@ -321,8 +322,9 @@ pub fn main() !void {
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        zm.storeMat(&view, viewM);
-        shader.setMat4f("view:", view);
+        const normal_view = camera.getViewMatrix();
+        zm.storeMat(&view, normal_view);
+        shader.setMat4f("view", view);
 
         // cubes
         gl.bindVertexArray(cubeVAO);
