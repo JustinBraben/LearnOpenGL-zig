@@ -16,7 +16,7 @@ pub const ConfigOptions = struct {
 };
 
 // Camera
-const camera_pos = zm.loadArr3(.{ 0.0, 0.0, 5.0 });
+const camera_pos = zm.loadArr3(.{ 0.0, 0.0, 3.0 });
 var lastX: f64 = 0.0;
 var lastY: f64 = 0.0;
 var first_mouse = true;
@@ -263,32 +263,42 @@ pub fn main() !void {
         // -----
         processInput(window, delta_time);
 
-        // render
-        // ------
+        // first render pass: mirror texture.
+        // bind to framebuffer and draw to color texture as we normally 
+        // would, but with the view camera reversed.
         // bind to framebuffer and draw scene as we normally would to color texture 
+        // ------------------------------------------------------------------------
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
         gl.enable(gl.DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
-        // render
-        // ------
+        // make sure we clear the framebuffer's content
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         shader.use();
-        zm.storeMat(&model, zm.translation(-1.0, 0.0, -1.0));
+        zm.storeMat(&model, zm.identity());
         shader.setMat4f("model", model);
+        // // rotate the camera's yaw 180 degrees around
+        // camera.yaw += 180.0;
+        // // call this to make sure it updates its camera vectors, note that we disable pitch constrains for this specific case (otherwise we can't reverse camera's pitch values)
+        camera.processMouseMovement(0, 0, false);
         const viewM = camera.getViewMatrix();
         zm.storeMat(&view, viewM);
-        shader.setMat4f("view", view);
+        // // reset it back to its original orientation
+        // camera.yaw -= 180.0;
+        camera.processMouseMovement(0, 0, true);
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
         const projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(camera.zoom), aspect_ratio, 0.1, 100.0);
         zm.storeMat(&projection, projectionM);
+        shader.setMat4f("view", view);
         shader.setMat4f("projection",  projection);
         // cubes
         gl.bindVertexArray(cubeVAO);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, cube_texture);
+        zm.storeMat(&model, zm.mul(zm.identity(), zm.translation(-1.0, 0.0, -1.0)));
+        shader.setMat4f("model", model);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
         zm.storeMat(&model, zm.mul(zm.identity(), zm.translation(2.0, 0.0, 0.0)));
         shader.setMat4f("model", model);
@@ -300,13 +310,34 @@ pub fn main() !void {
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         gl.bindVertexArray(0);
 
-        // now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+        // second render pass: draw as normal
+        // ----------------------------------
         gl.bindFramebuffer(gl.FRAMEBUFFER, 0);
+
+        gl.clearColor(0.1, 0.1, 0.1, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // cubes
+        gl.bindVertexArray(cubeVAO);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, cube_texture);
+        zm.storeMat(&model, zm.mul(zm.identity(), zm.translation(-1.0, 0.0, -1.0)));
+        shader.setMat4f("model", model);
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
+        zm.storeMat(&model, zm.mul(zm.identity(), zm.translation(2.0, 0.0, 0.0)));
+        shader.setMat4f("model", model);
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
+        // floor
+        gl.bindVertexArray(planeVAO);
+        gl.bindTexture(gl.TEXTURE_2D, floor_texture);
+        shader.setMat4f("model",  zm.matToArr(zm.identity()));
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        gl.bindVertexArray(0);
+
+
+        // now draw the mirror quad with screen texture
+        // --------------------------------------------
         gl.disable(gl.DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
-        // clear all relevant buffers
-        // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
-        gl.clearColor(1.0, 1.0, 1.0, 1.0); 
-        gl.clear(gl.COLOR_BUFFER_BIT);
 
         screenShader.use();
         gl.bindVertexArray(quadVAO);

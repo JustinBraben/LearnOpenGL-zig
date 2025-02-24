@@ -24,7 +24,7 @@ up: zm.F32x4 = undefined,
 right: zm.F32x4 = undefined,
 
 // euler Angles
-yaw: f32 = -90,
+yaw: f32 = -90.0,
 pitch: f32 = 0.0,
 
 // camera options
