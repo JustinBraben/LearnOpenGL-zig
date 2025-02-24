@@ -201,7 +201,7 @@ const advanced_opengl = [_][]const u8{
     "3.1.blending_discard/blending_discard",
     "3.2.blending_sort/blending_sort",
     "4.face_culling_exercise1/face_culling_exercise1",
-    "6.1.cubemaps_skybox/cubemaps_skybox",
     "5.1.framebuffers/framebuffers",
     "5.2.framebuffers_exercise1/framebuffers_exercise1",
+    "6.1.cubemaps_skybox/cubemaps_skybox",
 };
