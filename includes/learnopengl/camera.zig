@@ -1,4 +1,3 @@
-
 const std = @import("std");
 const math = std.math;
 const zm = @import("zmath");
@@ -13,36 +12,42 @@ pub const CameraMovement = enum {
     RIGHT,
 };
 
-const WORLD_UP = zm.loadArr3(.{0.0, 1.0, 0.0});
-const MOVEMENT_SPEED: f32 = 2.5;
-const MOUSE_SENSITIVITY: f32 = 0.1;
+// Default camera values
+const YAW: f32 = -90.0;
+const PITCH: f32 = 0.0;
+const SPEED: f32 = 2.5;
+const SENSITIVITY: f32 = 0.1;
+const ZOOM: f32 = 45.0;
 
 // Camera attributes
-position: zm.F32x4 = zm.loadArr3(.{0.0, 0.0, 0.0}),
-front: zm.F32x4 = zm.loadArr3(.{0.0, 0.0, -1.0}),
+position: zm.F32x4 = zm.loadArr3(.{ 0.0, 0.0, 0.0 }),
+front: zm.F32x4 = zm.loadArr3(.{ 0.0, 0.0, -1.0 }),
 up: zm.F32x4 = undefined,
 right: zm.F32x4 = undefined,
+world_up: zm.F32x4 = zm.loadArr3(.{ 0.0, 1.0, 0.0 }),
 
 // euler Angles
 yaw: f32 = -90.0,
 pitch: f32 = 0.0,
 
 // camera options
+movement_speed: f32 = SPEED,
+mouse_sensitivity: f32 = SENSITIVITY,
 zoom: f32 = 45.0,
 speed_modifier: f32 = 1.0,
 
 /// Initialize the camera.
 /// If null is passed initial position is .{0.0, 0.0, 0.0}
 pub fn init(position: ?zm.F32x4) Camera {
-    const front = zm.loadArr3(.{0.0, 0.0, -1.0});
-    const world_up = zm.loadArr3(.{0.0, 1.0, 0.0});
+    const front = zm.loadArr3(.{ 0.0, 0.0, -1.0 });
+    const world_up = zm.loadArr3(.{ 0.0, 1.0, 0.0 });
     const right = zm.normalize3(zm.cross3(front, world_up));
     const up = zm.normalize3(zm.cross3(right, front));
 
     return .{
-        .position = if (position) |val| val else zm.loadArr3(.{0.0, 0.0, 0.0}),
-        .right = zm.normalize3(zm.cross3(front, world_up)),
-        .up = up,
+        .position = if (position) |val| val else zm.loadArr3(.{ 0.0, 0.0, 0.0 }),
+        .world_up = up,
+        .right = right,
     };
 }
 
@@ -60,28 +65,33 @@ pub fn getFrontPos(self: *Camera) [3]f32 {
     return zm.vecToArr3(self.front);
 }
 
-/// processes input received from any keyboard-like input system. 
+/// processes input received from any keyboard-like input system.
 /// Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 pub fn processKeyboard(self: *Camera, direction: Camera.CameraMovement, delta_time: f32) void {
-    const velocity = zm.f32x4s(MOVEMENT_SPEED * delta_time);
-    switch (direction) {   
-        .FORWARD => self.position += self.front * velocity * @as(zm.F32x4, @splat(self.speed_modifier)),
-        .BACKWARD => self.position -= self.front * velocity * @as(zm.F32x4, @splat(self.speed_modifier)),
-        .LEFT => self.position -= self.right * velocity * @as(zm.F32x4, @splat(self.speed_modifier)),
-        .RIGHT => self.position += self.right * velocity * @as(zm.F32x4, @splat(self.speed_modifier)),
+    // const velocity = self.movement_speed * delta_time;
+    // const velocity_vec = zm.f32x4s(velocity);
+    // const modified_velocity = velocity_vec * @as(zm.Vec, @splat(self.speed_modifier));
+    const velocity = zm.f32x4s(self.movement_speed * delta_time) * @as(zm.Vec, @splat(self.speed_modifier));
+    switch (direction) {
+        .FORWARD => self.position += self.front * velocity,
+        .BACKWARD => self.position -= self.front * velocity,
+        .LEFT => self.position -= self.right * velocity,
+        .RIGHT => self.position += self.right * velocity,
     }
     // make sure the user stays at the ground level
     // self.position[1] = 0.0;
 }
 
-/// Processes input received from a mouse input system. 
+/// Processes input received from a mouse input system.
 /// Expects the offset value in both the x and y direction.
-pub fn processMouseMovement(self: *Camera, xoffset: f64, yoffset: f64, constrain_pitch: bool) void {
-    const _xoffset = @as(f32, @floatCast(xoffset)) * MOUSE_SENSITIVITY;
-    const _yoffset = @as(f32, @floatCast(yoffset)) * MOUSE_SENSITIVITY;
+pub fn processMouseMovement(self: *Camera, x_offset: f64, y_offset: f64, constrain_pitch: bool) void {
+    // const _xoffset = @as(f32, @floatCast(xoffset)) * SENSITIVITY;
+    // const _yoffset = @as(f32, @floatCast(yoffset)) * SENSITIVITY;
+    const xoff: f32 = @as(f32, @floatCast(x_offset)) * self.mouse_sensitivity;
+    const yoff: f32 = @as(f32, @floatCast(y_offset)) * self.mouse_sensitivity;
 
-    self.yaw += _xoffset;
-    self.pitch += _yoffset;
+    self.yaw += xoff;
+    self.pitch += yoff;
 
     // make sure that when pitch is out of bounds, screen doesn't get flipped
     if (constrain_pitch) {
@@ -95,7 +105,7 @@ pub fn processMouseMovement(self: *Camera, xoffset: f64, yoffset: f64, constrain
     self.updateCameraVectors();
 }
 
-/// Processes input received from a mouse scroll-wheel event. 
+/// Processes input received from a mouse scroll-wheel event.
 /// Only requires input on the vertical wheel-axis
 pub fn processMouseScroll(self: *Camera, yoffset: f64) void {
     self.zoom -= @as(f32, @floatCast(yoffset));
@@ -107,13 +117,20 @@ pub fn processMouseScroll(self: *Camera, yoffset: f64) void {
 
 /// Calculates the front vector from the Camera's (updated) Euler Angles
 fn updateCameraVectors(self: *Camera) void {
+    // Calculate the new front vector
+    const pitch_rad = math.degreesToRadians(self.pitch);
+    const yaw_rad = math.degreesToRadians(self.yaw);
+    
     // calculate the new Front vector
-    var front: zm.F32x4 = undefined;
-    front[0] = @cos(math.degreesToRadians(self.yaw)) * @cos(math.degreesToRadians(self.pitch));
-    front[1] = @sin(math.degreesToRadians(self.pitch));
-    front[2] = @sin(math.degreesToRadians(self.yaw)) * @cos(math.degreesToRadians(self.pitch));
-    self.front = front;
-    // also re-calculate the Right and Up vector
-    self.right = zm.normalize3(zm.cross3(self.front, WORLD_UP));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-    self.up    = zm.normalize3(zm.cross3(self.right, self.front));
+    const x = @cos(yaw_rad) * @cos(pitch_rad);
+    const y = @sin(pitch_rad);
+    const z = @sin(yaw_rad) * @cos(pitch_rad);
+    
+    self.front = zm.normalize3(zm.f32x4(x, y, z, 0.0));
+
+    // Re-calculate the Right and Up vector
+    // Normalize the vectors, because their length gets closer to 0 the more you
+    // look up or down which results in slower movement
+    self.right = zm.normalize3(zm.cross3(self.front, self.world_up));
+    self.up = zm.normalize3(zm.cross3(self.right, self.front));
 }

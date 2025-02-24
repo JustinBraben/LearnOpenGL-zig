@@ -27,7 +27,7 @@ var delta_time: f32 = 0.0;
 var last_frame: f32 = 0.0;
 
 // lighting
-var light_position = [_]f32{4.2, 2.0, 4.0};
+var light_position = [_]f32{ 4.2, 2.0, 4.0 };
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -55,9 +55,9 @@ pub fn main() !void {
     defer window.destroy();
 
     glfw.makeContextCurrent(window);
+    _ = window.setFramebufferSizeCallback(framebuffer_size_callback);
     _ = window.setCursorPosCallback(mouse_callback);
     _ = window.setScrollCallback(scroll_callback);
-    _ = window.setFramebufferSizeCallback(framebuffer_size_callback);
     window.setInputMode(.cursor, glfw.Cursor.Mode.disabled);
     try zopengl.loadCoreProfile(glfw.getProcAddress, @intCast(config.gl_major), @intCast(config.gl_minor));
 
@@ -72,84 +72,84 @@ pub fn main() !void {
     var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers.vs", "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers.fs");
     var screenShader: Shader = Shader.create(arena, "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers_screen.vs", "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers_screen.fs");
 
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
     const vertices = [_]gl.Float{
         // positions          // texture Coords
-        -0.5, -0.5, -0.5,  0.0, 0.0,
-         0.5, -0.5, -0.5,  1.0, 0.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-        -0.5,  0.5, -0.5,  0.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 0.0,
+        -0.5, -0.5, -0.5, 0.0, 0.0,
+        0.5,  -0.5, -0.5, 1.0, 0.0,
+        0.5,  0.5,  -0.5, 1.0, 1.0,
+        0.5,  0.5,  -0.5, 1.0, 1.0,
+        -0.5, 0.5,  -0.5, 0.0, 1.0,
+        -0.5, -0.5, -0.5, 0.0, 0.0,
 
-        -0.5, -0.5,  0.5,  0.0, 0.0,
-         0.5, -0.5,  0.5,  1.0, 0.0,
-         0.5,  0.5,  0.5,  1.0, 1.0,
-         0.5,  0.5,  0.5,  1.0, 1.0,
-        -0.5,  0.5,  0.5,  0.0, 1.0,
-        -0.5, -0.5,  0.5,  0.0, 0.0,
+        -0.5, -0.5, 0.5,  0.0, 0.0,
+        0.5,  -0.5, 0.5,  1.0, 0.0,
+        0.5,  0.5,  0.5,  1.0, 1.0,
+        0.5,  0.5,  0.5,  1.0, 1.0,
+        -0.5, 0.5,  0.5,  0.0, 1.0,
+        -0.5, -0.5, 0.5,  0.0, 0.0,
 
-        -0.5,  0.5,  0.5,  1.0, 0.0,
-        -0.5,  0.5, -0.5,  1.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 1.0,
-        -0.5, -0.5, -0.5,  0.0, 1.0,
-        -0.5, -0.5,  0.5,  0.0, 0.0,
-        -0.5,  0.5,  0.5,  1.0, 0.0,
+        -0.5, 0.5,  0.5,  1.0, 0.0,
+        -0.5, 0.5,  -0.5, 1.0, 1.0,
+        -0.5, -0.5, -0.5, 0.0, 1.0,
+        -0.5, -0.5, -0.5, 0.0, 1.0,
+        -0.5, -0.5, 0.5,  0.0, 0.0,
+        -0.5, 0.5,  0.5,  1.0, 0.0,
 
-         0.5,  0.5,  0.5,  1.0, 0.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-         0.5, -0.5, -0.5,  0.0, 1.0,
-         0.5, -0.5, -0.5,  0.0, 1.0,
-         0.5, -0.5,  0.5,  0.0, 0.0,
-         0.5,  0.5,  0.5,  1.0, 0.0,
+        0.5,  0.5,  0.5,  1.0, 0.0,
+        0.5,  0.5,  -0.5, 1.0, 1.0,
+        0.5,  -0.5, -0.5, 0.0, 1.0,
+        0.5,  -0.5, -0.5, 0.0, 1.0,
+        0.5,  -0.5, 0.5,  0.0, 0.0,
+        0.5,  0.5,  0.5,  1.0, 0.0,
 
-        -0.5, -0.5, -0.5,  0.0, 1.0,
-         0.5, -0.5, -0.5,  1.0, 1.0,
-         0.5, -0.5,  0.5,  1.0, 0.0,
-         0.5, -0.5,  0.5,  1.0, 0.0,
-        -0.5, -0.5,  0.5,  0.0, 0.0,
-        -0.5, -0.5, -0.5,  0.0, 1.0,
+        -0.5, -0.5, -0.5, 0.0, 1.0,
+        0.5,  -0.5, -0.5, 1.0, 1.0,
+        0.5,  -0.5, 0.5,  1.0, 0.0,
+        0.5,  -0.5, 0.5,  1.0, 0.0,
+        -0.5, -0.5, 0.5,  0.0, 0.0,
+        -0.5, -0.5, -0.5, 0.0, 1.0,
 
-        -0.5,  0.5, -0.5,  0.0, 1.0,
-         0.5,  0.5, -0.5,  1.0, 1.0,
-         0.5,  0.5,  0.5,  1.0, 0.0,
-         0.5,  0.5,  0.5,  1.0, 0.0,
-        -0.5,  0.5,  0.5,  0.0, 0.0,
-        -0.5,  0.5, -0.5,  0.0, 1.0
+        -0.5, 0.5,  -0.5, 0.0, 1.0,
+        0.5,  0.5,  -0.5, 1.0, 1.0,
+        0.5,  0.5,  0.5,  1.0, 0.0,
+        0.5,  0.5,  0.5,  1.0, 0.0,
+        -0.5, 0.5,  0.5,  0.0, 0.0,
+        -0.5, 0.5,  -0.5, 0.0, 1.0,
     };
 
     const planeVertices = [_]gl.Float{
-        // positions       // texture Coords 
-        5.0, -0.5,  5.0,   2.0, 0.0,
-        -5.0, -0.5,  5.0,  0.0, 0.0,
-        -5.0, -0.5, -5.0,  0.0, 2.0,
+        // positions       // texture Coords
+        5.0,  -0.5, 5.0,  2.0, 0.0,
+        -5.0, -0.5, 5.0,  0.0, 0.0,
+        -5.0, -0.5, -5.0, 0.0, 2.0,
 
-        5.0, -0.5,  5.0,   2.0, 0.0,
-        -5.0, -0.5, -5.0,  0.0, 2.0,
-        5.0, -0.5, -5.0,   2.0, 2.0		
+        5.0,  -0.5, 5.0,  2.0, 0.0,
+        -5.0, -0.5, -5.0, 0.0, 2.0,
+        5.0,  -0.5, -5.0, 2.0, 2.0,
     };
 
-    // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates. NOTE that this plane is now much smaller and at the top of the screen
+    // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+    // NOTE that this plane is now much smaller and at the top of the screen
     const quadVertices = [_]gl.Float{
         // positions   // texCoords
-        -0.3,  1.0,  0.0, 1.0,
-        -0.3,  0.7,  0.0, 0.0,
-         0.3,  0.7,  1.0, 0.0,
+        -0.3, 1.0, 0.0, 1.0,
+        -0.3, 0.7, 0.0, 0.0,
+        0.3,  0.7, 1.0, 0.0,
 
-        -0.3,  1.0,  0.0, 1.0,
-         0.3,  0.7,  1.0, 0.0,
-         0.3,  1.0,  1.0, 1.0
+        -0.3, 1.0, 0.0, 1.0,
+        0.3,  0.7, 1.0, 0.0,
+        0.3,  1.0, 1.0, 1.0,
     };
 
     // cube VAO
     var cubeVAO: gl.Uint = undefined;
     var cubeVBO: gl.Uint = undefined;
-
     gl.genVertexArrays(1, &cubeVAO);
     defer gl.deleteVertexArrays(1, &cubeVAO);
-
     gl.genBuffers(1, &cubeVBO);
     defer gl.deleteBuffers(1, &cubeVBO);
-
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
     gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * vertices.len, &vertices, gl.STATIC_DRAW);
     gl.bindVertexArray(cubeVAO);
@@ -158,7 +158,6 @@ pub fn main() !void {
     gl.enableVertexAttribArray(1);
     const texture_coords_offset: [*c]c_uint = (3 * @sizeOf(gl.Float));
     gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), texture_coords_offset);
-    gl.bindVertexArray(0);
     // plane VAO
     var planeVAO: gl.Uint = undefined;
     var planeVBO: gl.Uint = undefined;
@@ -173,7 +172,6 @@ pub fn main() !void {
     gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), null);
     gl.enableVertexAttribArray(1);
     gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), texture_coords_offset);
-    gl.bindVertexArray(0);
     // screen quad VAO
     var quadVAO: gl.Uint = undefined;
     var quadVBO: gl.Uint = undefined;
@@ -189,7 +187,6 @@ pub fn main() !void {
     gl.enableVertexAttribArray(1);
     const quad_texture_coords_offset: [*c]c_uint = (2 * @sizeOf(gl.Float));
     gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 4 * @sizeOf(gl.Float), quad_texture_coords_offset);
-    gl.bindVertexArray(0);
 
     // zstbi: loading an image.
     zstbi.init(allocator);
@@ -247,6 +244,9 @@ pub fn main() !void {
     // View matrix
     var view: [16]f32 = undefined;
 
+    // // Rear view matrix
+    // var rear_view: [16]f32 = undefined;
+
     // Buffer to store Ortho-projection matrix (in render loop)
     var projection: [16]f32 = undefined;
 
@@ -264,9 +264,9 @@ pub fn main() !void {
         processInput(window, delta_time);
 
         // first render pass: mirror texture.
-        // bind to framebuffer and draw to color texture as we normally 
+        // bind to framebuffer and draw to color texture as we normally
         // would, but with the view camera reversed.
-        // bind to framebuffer and draw scene as we normally would to color texture 
+        // bind to framebuffer and draw scene as we normally would to color texture
         // ------------------------------------------------------------------------
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
         gl.enable(gl.DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
@@ -276,23 +276,26 @@ pub fn main() !void {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         shader.use();
-        zm.storeMat(&model, zm.identity());
-        shader.setMat4f("model", model);
-        // // rotate the camera's yaw 180 degrees around
-        // camera.yaw += 180.0;
-        // // call this to make sure it updates its camera vectors, note that we disable pitch constrains for this specific case (otherwise we can't reverse camera's pitch values)
-        camera.processMouseMovement(0, 0, false);
         const viewM = camera.getViewMatrix();
         zm.storeMat(&view, viewM);
-        // // reset it back to its original orientation
+
+        // // TODO: Rotate camera's yaw 180 degrees for rear view framebuffer
+        // camera.yaw += 180.0;
+        // camera.processMouseMovement(0, 0, false);
+        // const mirror_view = camera.getViewMatrix();
         // camera.yaw -= 180.0;
-        camera.processMouseMovement(0, 0, true);
+        // camera.processMouseMovement(0, 0, true);
+        // zm.storeMat(&rear_view, mirror_view);
+
         const window_size = window.getSize();
         const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
         const projectionM = zm.perspectiveFovRhGl(math.degreesToRadians(camera.zoom), aspect_ratio, 0.1, 100.0);
         zm.storeMat(&projection, projectionM);
+
+        // Set matrices in shader
         shader.setMat4f("view", view);
-        shader.setMat4f("projection",  projection);
+        shader.setMat4f("projection", projection);
+
         // cubes
         gl.bindVertexArray(cubeVAO);
         gl.activeTexture(gl.TEXTURE0);
@@ -306,7 +309,8 @@ pub fn main() !void {
         // floor
         gl.bindVertexArray(planeVAO);
         gl.bindTexture(gl.TEXTURE_2D, floor_texture);
-        shader.setMat4f("model",  zm.matToArr(zm.identity()));
+        zm.storeMat(&model, zm.identity());
+        shader.setMat4f("model", model);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         gl.bindVertexArray(0);
 
@@ -317,6 +321,9 @@ pub fn main() !void {
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        zm.storeMat(&view, viewM);
+        shader.setMat4f("view:", view);
+
         // cubes
         gl.bindVertexArray(cubeVAO);
         gl.activeTexture(gl.TEXTURE0);
@@ -330,10 +337,10 @@ pub fn main() !void {
         // floor
         gl.bindVertexArray(planeVAO);
         gl.bindTexture(gl.TEXTURE_2D, floor_texture);
-        shader.setMat4f("model",  zm.matToArr(zm.identity()));
+        zm.storeMat(&model, zm.identity());
+        shader.setMat4f("model", model);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         gl.bindVertexArray(0);
-
 
         // now draw the mirror quad with screen texture
         // --------------------------------------------
@@ -383,8 +390,7 @@ fn mouse_callback(window: *glfw.Window, xposIn: f64, yposIn: f64) callconv(.C) v
     const xpos: f32 = @floatCast(@trunc(xposIn));
     const ypos: f32 = @floatCast(@trunc(yposIn));
 
-    if (first_mouse)
-    {
+    if (first_mouse) {
         lastX = xpos;
         lastY = ypos;
         first_mouse = false;
@@ -419,20 +425,11 @@ fn loadTexture(path: [:0]const u8, textureID: *c_uint) !void {
         else => unreachable,
     };
 
-    std.debug.print("{s} is {}\n", .{path, format});
+    std.debug.print("{s} is {}\n", .{ path, format });
 
     gl.bindTexture(gl.TEXTURE_2D, textureID.*);
     // Generate the textureID
-    gl.texImage2D(
-        gl.TEXTURE_2D, 
-        0, 
-        format, 
-        @as(c_int, @intCast(texture_image.width)), 
-        @as(c_int, @intCast(texture_image.height)), 
-        0, 
-        format, 
-        gl.UNSIGNED_BYTE, 
-        @ptrCast(texture_image.data));
+    gl.texImage2D(gl.TEXTURE_2D, 0, format, @as(c_int, @intCast(texture_image.width)), @as(c_int, @intCast(texture_image.height)), 0, format, gl.UNSIGNED_BYTE, @ptrCast(texture_image.data));
     gl.generateMipmap(gl.TEXTURE_2D);
 
     // set the texture1 wrapping parameters
@@ -449,7 +446,7 @@ fn loadTexture(path: [:0]const u8, textureID: *c_uint) !void {
 /// -X (left)
 /// +Y (top)
 /// -Y (bottom)
-/// +Z (front) 
+/// +Z (front)
 /// -Z (back)
 fn loadCubemap(faces: []const [:0]const u8, textureID: *c_uint) !void {
     // var textureID: gl.Uint = undefined;
@@ -468,18 +465,8 @@ fn loadCubemap(faces: []const [:0]const u8, textureID: *c_uint) !void {
         };
 
         // Generate the textureID
-        gl.texImage2D(
-            gl.TEXTURE_CUBE_MAP_POSITIVE_X + @as(c_uint, @intCast(i)), 
-            0, 
-            format, 
-            @as(c_int, @intCast(texture_image.width)), 
-            @as(c_int, @intCast(texture_image.height)), 
-            0, 
-            format, 
-            gl.UNSIGNED_BYTE, 
-            @ptrCast(texture_image.data));
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + @as(c_uint, @intCast(i)), 0, format, @as(c_int, @intCast(texture_image.width)), @as(c_int, @intCast(texture_image.height)), 0, format, gl.UNSIGNED_BYTE, @ptrCast(texture_image.data));
         gl.generateMipmap(gl.TEXTURE_2D);
-
     }
 
     // std.debug.print("{s} is {}\n", .{path, format});
