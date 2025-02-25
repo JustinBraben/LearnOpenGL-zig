@@ -204,4 +204,5 @@ const advanced_opengl = [_][]const u8{
     "5.1.framebuffers/framebuffers",
     "5.2.framebuffers_exercise1/framebuffers_exercise1",
     "6.1.cubemaps_skybox/cubemaps_skybox",
+    "6.2.cubemaps_environment_mapping/cubemaps_environment_mapping",
 };
