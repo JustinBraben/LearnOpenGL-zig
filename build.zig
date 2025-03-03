@@ -205,4 +205,5 @@ const advanced_opengl = [_][]const u8{
     "5.2.framebuffers_exercise1/framebuffers_exercise1",
     "6.1.cubemaps_skybox/cubemaps_skybox",
     "6.2.cubemaps_environment_mapping/cubemaps_environment_mapping",
+    "8.advanced_glsl_ubo/advanced_glsl_ubo",
 };
