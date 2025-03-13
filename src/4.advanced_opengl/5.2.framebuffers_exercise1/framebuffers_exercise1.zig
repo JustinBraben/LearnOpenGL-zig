@@ -41,12 +41,12 @@ pub fn main() !void {
     try glfw.init();
     defer glfw.terminate();
 
-    glfw.windowHintTyped(.context_version_major, config.gl_major);
-    glfw.windowHintTyped(.context_version_minor, config.gl_minor);
-    glfw.windowHintTyped(.opengl_profile, .opengl_core_profile);
-    glfw.windowHintTyped(.opengl_forward_compat, true);
-    glfw.windowHintTyped(.client_api, .opengl_api);
-    glfw.windowHintTyped(.doublebuffer, true);
+    glfw.windowHint(.context_version_major, config.gl_major);
+    glfw.windowHint(.context_version_minor, config.gl_minor);
+    glfw.windowHint(.opengl_profile, .opengl_core_profile);
+    glfw.windowHint(.opengl_forward_compat, true);
+    glfw.windowHint(.client_api, .opengl_api);
+    glfw.windowHint(.doublebuffer, true);
 
     var window = glfw.Window.create(config.width, config.height, "LearnOpenGL", null) catch |e| {
         std.io.getStdErr().writer().print("Failed to create GLFW window\n", .{}) catch {};
@@ -58,7 +58,7 @@ pub fn main() !void {
     _ = window.setFramebufferSizeCallback(framebuffer_size_callback);
     _ = window.setCursorPosCallback(mouse_callback);
     _ = window.setScrollCallback(scroll_callback);
-    window.setInputMode(.cursor, glfw.Cursor.Mode.disabled);
+    try window.setInputMode(.cursor, glfw.Cursor.Mode.disabled);
     try zopengl.loadCoreProfile(glfw.getProcAddress, @intCast(config.gl_major), @intCast(config.gl_minor));
 
     glfw.swapInterval(1);
