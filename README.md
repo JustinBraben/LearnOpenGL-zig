@@ -26,7 +26,7 @@ For example, to run example code within the "Hello Triangle" section of "Getting
 execute in shell as the following (assuming you are in the repository root directory initially):
 
 ```shell
-zig build run-2.1.hello_triangle/hello_triangle
+zig build run-2.1.hello_triangle
 ```
 
 ## Dependencies

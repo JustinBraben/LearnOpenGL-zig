@@ -26,12 +26,12 @@ pub fn build(b: *std.Build) void {
 
     // Build getting_started
     const getting_started_step = b.step("getting_started", "Build getting_started examples");
-    inline for (getting_started) |example_name| {
+    for (getting_started) |example_name| {
         var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
         const actual_example_name = example_name_split_iter.next().?;
         const example = b.addExecutable(.{
             .name = actual_example_name,
-            .root_source_file = b.path("src/1.getting_started/" ++ example_name ++ ".zig"),
+            .root_source_file = b.path(b.fmt("src/1.getting_started/{s}.zig", .{example_name})),
             .target = target,
             .optimize = optimize,
         });
@@ -49,14 +49,14 @@ pub fn build(b: *std.Build) void {
         example.root_module.addImport("common", common_module);
         example.root_module.addImport("Camera", camera_module);
 
-        const compile_step = b.step(example_name, "Build " ++ example_name);
+        const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
         compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
         b.getInstallStep().dependOn(compile_step);
 
         const run_cmd = b.addRunArtifact(example);
         run_cmd.step.dependOn(compile_step);
 
-        const run_step = b.step("run-" ++ example_name, "Run " ++ example_name);
+        const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
         run_step.dependOn(&run_cmd.step);
     }
 
@@ -82,14 +82,14 @@ pub fn build(b: *std.Build) void {
         example.root_module.addImport("common", common_module);
         example.root_module.addImport("Camera", camera_module);
 
-        const compile_step = b.step(example_name, "Build " ++ example_name);
+        const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
         compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
         b.getInstallStep().dependOn(compile_step);
 
         const run_cmd = b.addRunArtifact(example);
         run_cmd.step.dependOn(compile_step);
 
-        const run_step = b.step("run-" ++ example_name, "Run " ++ example_name);
+        const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
         run_step.dependOn(&run_cmd.step);
     }
 
@@ -115,14 +115,14 @@ pub fn build(b: *std.Build) void {
         example.root_module.addImport("common", common_module);
         example.root_module.addImport("Camera", camera_module);
 
-        const compile_step = b.step(example_name, "Build " ++ example_name);
+        const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
         compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
         b.getInstallStep().dependOn(compile_step);
 
         const run_cmd = b.addRunArtifact(example);
         run_cmd.step.dependOn(compile_step);
 
-        const run_step = b.step("run-" ++ example_name, "Run " ++ example_name);
+        const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
         run_step.dependOn(&run_cmd.step);
     }
 
