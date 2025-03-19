@@ -18,6 +18,11 @@ jobs:
             version: 0.14.0
         - name: Display Zig version
           run: zig version
+        - name: Install dependencies (Ubuntu)
+          if: runner.os == 'Linux'
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
         - name: Build
           run: zig build
 
@@ -38,6 +43,12 @@ jobs:
         - name: Display Zig version
           run: zig version
           shell: bash  # Use bash shell to ensure compatibility
+        - name: Install dependencies (Ubuntu)
+          if: runner.os == 'Linux'
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
+          shell: bash
         - name: Check Nightly build 
           run: zig build
           shell: bash  # Use bash shell to ensure compatibility
