@@ -57,7 +57,6 @@ fn createCategory(
         example.linkLibrary(modules.zstbi.artifact("zstbi"));
         example.root_module.addImport("zmath", modules.zmath.module("root"));
         example.root_module.addImport("Shader", modules.shader);
-        example.root_module.addImport("common", modules.common);
         example.root_module.addImport("Camera", modules.camera);
 
         const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
@@ -80,7 +79,6 @@ const Modules = struct {
     zstbi: *std.Build.Dependency,
     zmath: *std.Build.Dependency,
     shader: *std.Build.Module,
-    common: *std.Build.Module,
     camera: *std.Build.Module,
 };
 
@@ -101,18 +99,12 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
         .optimize = optimize,
     });
     shader_module.addImport("zopengl", zopengl.module("root"));
-    const common_module = b.addModule("common", .{ 
-        .root_source_file = b.path("includes/learnopengl/common.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
     const camera_module = b.addModule("Camera", .{ 
         .root_source_file = b.path("includes/learnopengl/camera.zig"),
         .target = target,
         .optimize = optimize,
     });
     camera_module.addImport("zmath", zmath.module("root"));
-    camera_module.addImport("common", common_module);
     
     return .{
         .zglfw = zglfw,
@@ -120,7 +112,6 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
         .zstbi = zstbi,
         .zmath = zmath,
         .shader = shader_module,
-        .common = common_module,
         .camera = camera_module,
     };
 }
