@@ -60,6 +60,8 @@ fn createCategory(
         example.root_module.addImport("zstbi", modules.zstbi.module("root"));
         example.linkLibrary(modules.zstbi.artifact("zstbi"));
         example.root_module.addImport("zmath", modules.zmath.module("root"));
+        example.root_module.addImport("zmesh", modules.zmesh.module("root"));
+        example.linkLibrary(modules.zmesh.artifact("zmesh"));
         example.root_module.addImport("Shader", modules.shader);
         example.root_module.addImport("Camera", modules.camera);
 
@@ -82,8 +84,11 @@ const Modules = struct {
     zstbi: *std.Build.Dependency,
     zopengl: *std.Build.Dependency,
     zglfw: *std.Build.Dependency,
+    zmesh: *std.Build.Dependency,
     shader: *std.Build.Module,
     camera: *std.Build.Module,
+    mesh: *std.Build.Module,
+    // model: *std.Build.Module,
 };
 
 fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode,) Modules {
@@ -95,6 +100,7 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
     const zopengl = b.dependency("zopengl", .{ .target = target });
     const zstbi = b.dependency("zstbi", .{ .target = target, .optimize = optimize, });
     const zmath = b.dependency("zmath", .{ .target = target, .optimize = optimize, });
+    const zmesh = b.dependency("zmesh", .{ .target = target, .optimize = optimize,});
 
     // modules
     const shader_module = b.addModule("Shader", .{ 
@@ -109,14 +115,22 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
         .optimize = optimize,
     });
     camera_module.addImport("zmath", zmath.module("root"));
+    const mesh_module = b.addModule("Mesh", .{ 
+        .root_source_file = b.path("includes/learnopengl/mesh.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    mesh_module.addImport("zopengl", zopengl.module("root"));
     
     return .{
         .zmath = zmath,
         .zstbi = zstbi,
         .zopengl = zopengl,
         .zglfw = zglfw,
+        .zmesh = zmesh,
         .shader = shader_module,
         .camera = camera_module,
+        .mesh = mesh_module,
     };
 }
 
