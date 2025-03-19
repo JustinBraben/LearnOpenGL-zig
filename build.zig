@@ -64,6 +64,8 @@ fn createCategory(
         example.linkLibrary(modules.zmesh.artifact("zmesh"));
         example.root_module.addImport("Shader", modules.shader);
         example.root_module.addImport("Camera", modules.camera);
+        example.root_module.addImport("obj", modules.obj);
+        example.root_module.addImport("Model", modules.model);
 
         const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
         compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
@@ -88,7 +90,8 @@ const Modules = struct {
     shader: *std.Build.Module,
     camera: *std.Build.Module,
     mesh: *std.Build.Module,
-    // model: *std.Build.Module,
+    obj: *std.Build.Module,
+    model: *std.Build.Module,
 };
 
 fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode,) Modules {
@@ -101,6 +104,7 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
     const zstbi = b.dependency("zstbi", .{ .target = target, .optimize = optimize, });
     const zmath = b.dependency("zmath", .{ .target = target, .optimize = optimize, });
     const zmesh = b.dependency("zmesh", .{ .target = target, .optimize = optimize,});
+    const obj = b.dependency("obj", .{ .target = target, .optimize = optimize });
 
     // modules
     const shader_module = b.addModule("Shader", .{ 
@@ -121,6 +125,14 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
         .optimize = optimize,
     });
     mesh_module.addImport("zopengl", zopengl.module("root"));
+    const obj_module = obj.module("obj");
+    const model_module = b.addModule("Model", .{ 
+        .root_source_file = b.path("includes/learnopengl/model.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    model_module.addImport("obj", obj_module);
+    model_module.addImport("zopengl", zopengl.module("root"));
     
     return .{
         .zmath = zmath,
@@ -131,6 +143,8 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
         .shader = shader_module,
         .camera = camera_module,
         .mesh = mesh_module,
+        .obj = obj_module,
+        .model = model_module,
     };
 }
 

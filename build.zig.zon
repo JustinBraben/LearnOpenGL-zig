@@ -24,6 +24,10 @@
             .url = "https://github.com/zig-gamedev/zmesh/archive/1fc267af7c8bd00cb2d79de12b3e0512a3b787cf.tar.gz",
             .hash = "1220791c58e1f2e911d5b776efe8893c64684a56d9196b98d95b59ee45b3624b048d",
         },
+        .obj = .{
+            .url = "https://github.com/chip2n/zig-obj/archive/a2965b5860220538241fad5a5aa290312ca4e08a.tar.gz",
+            .hash = "obj-2.0.1-v8OfiljJAAAJx4eT9RzWIn2m9-AkEJx94-DYD28jEoz3"
+        }
     },
     .paths = .{
         "build.zig",

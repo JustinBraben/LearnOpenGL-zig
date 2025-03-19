@@ -23,9 +23,9 @@ pub const Mesh = struct {
     vertices: []Vertex,
     indices: []u32,
     textures: []Texture,
-    vao: u32,
-    vbo: u32,
-    ebo: u32,
+    vao: gl.Uint,
+    vbo: gl.Uint,
+    ebo: gl.Uint,
     
     pub fn init(allocator: Allocator, vertices: []Vertex, indices: []u32, textures: []Texture) !Mesh {
         var mesh = Mesh{

@@ -8,6 +8,8 @@ const zmesh = @import("zmesh");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
 const Camera = @import("Camera");
+const obj = @import("obj");
+const Model = @import("Model");
 
 pub const ConfigOptions = struct {
     width: i32 = 800,
@@ -78,6 +80,11 @@ pub fn main() !void {
     zmesh.init(allocator);
     defer zmesh.deinit();
 
+    const model_obj_path = "resources/objects/backpack/backpack.obj";
+    const model_mtl_path = "resources/objects/backpack/backpack.mtl";
+    var our_model = try Model.initFromPath(allocator, model_obj_path, model_mtl_path);
+    defer our_model.deinit();
+
     // After creating your cube
     var cube = zmesh.Shape.initCube();
     defer cube.deinit();
@@ -127,12 +134,6 @@ pub fn main() !void {
     const texcoords = try allocator.alloc([2]f32, cube.positions.len);
     defer allocator.free(texcoords);
 
-    // Print vertex positions to verify ordering
-    for (cube.positions, 0..) |pos, i| {
-        std.debug.print("Vertex {d}: ({d:.1}, {d:.1}, {d:.1})\n", 
-            .{i, pos[0], pos[1], pos[2]});
-    }
-
     // The cube likely has 36 vertices (6 faces * 2 triangles * 3 vertices)
     // Each face should have consistent texture coordinates
     for (0..6) |face| {
@@ -150,18 +151,24 @@ pub fn main() !void {
         texcoords[base_idx + 5] = .{0.0, 0.0}; // bottom-left
     }
 
-    // Print debug information after computations
-    std.debug.print("Cube stats after processing:\n", .{});
-    std.debug.print("  - Indices: {d}\n", .{cube.indices.len});
-    std.debug.print("  - Positions: {d}\n", .{cube.positions.len});
-    std.debug.print("  - Has normals: {}\n", .{cube.normals != null});
-    std.debug.print("  - Has texcoords: {}\n", .{cube.texcoords != null});
+    // // Print vertex positions to verify ordering
+    // for (cube.positions, 0..) |pos, i| {
+    //     std.debug.print("Vertex {d}: ({d:.1}, {d:.1}, {d:.1})\n", 
+    //         .{i, pos[0], pos[1], pos[2]});
+    // }
 
-    // Manually print texture coordinates to verify
-    std.debug.print("Added texcoords. First few: \n", .{});
-    for (texcoords, 0..) |coord, i| {
-        if (i < 8) std.debug.print("  [{d}]: ({d:.2}, {d:.2})\n", .{i, coord[0], coord[1]});
-    }
+    // // Print debug information after computations
+    // std.debug.print("Cube stats after processing:\n", .{});
+    // std.debug.print("  - Indices: {d}\n", .{cube.indices.len});
+    // std.debug.print("  - Positions: {d}\n", .{cube.positions.len});
+    // std.debug.print("  - Has normals: {}\n", .{cube.normals != null});
+    // std.debug.print("  - Has texcoords: {}\n", .{cube.texcoords != null});
+
+    // // Manually print texture coordinates to verify
+    // std.debug.print("Added texcoords. First few: \n", .{});
+    // for (texcoords, 0..) |coord, i| {
+    //     if (i < 8) std.debug.print("  [{d}]: ({d:.2}, {d:.2})\n", .{i, coord[0], coord[1]});
+    // }
 
     // Then use these texture coordinates in your rendering pipeline
     gl.bindBuffer(gl.ARRAY_BUFFER, texcoordVBO);
