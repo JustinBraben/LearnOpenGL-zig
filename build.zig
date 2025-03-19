@@ -14,6 +14,10 @@ pub fn build(b: *std.Build) void {
     const lighting_step = createCategory(
         b, "lighting", "2.lighting", &lighting, target, optimize, modules
     ) catch unreachable;
+
+    const model_loading_step = createCategory(
+        b, "model_loading", "3.model_loading", &model_loading, target, optimize, modules
+    ) catch unreachable;
     
     const advanced_opengl_step = createCategory(
         b, "advanced_opengl", "4.advanced_opengl", &advanced_opengl, target, optimize, modules
@@ -23,7 +27,7 @@ pub fn build(b: *std.Build) void {
     const all_step = b.step("all", "Build everything and runs all tests");
     all_step.dependOn(getting_started_step);
     all_step.dependOn(lighting_step);
-    // TODO: Add model loading step
+    all_step.dependOn(model_loading_step);
     all_step.dependOn(advanced_opengl_step);
     
     b.default_step.dependOn(all_step);
@@ -74,10 +78,10 @@ fn createCategory(
 }
 
 const Modules = struct {
-    zglfw: *std.Build.Dependency,
-    zopengl: *std.Build.Dependency,
-    zstbi: *std.Build.Dependency,
     zmath: *std.Build.Dependency,
+    zstbi: *std.Build.Dependency,
+    zopengl: *std.Build.Dependency,
+    zglfw: *std.Build.Dependency,
     shader: *std.Build.Module,
     camera: *std.Build.Module,
 };
@@ -107,10 +111,10 @@ fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
     camera_module.addImport("zmath", zmath.module("root"));
     
     return .{
-        .zglfw = zglfw,
-        .zopengl = zopengl,
-        .zstbi = zstbi,
         .zmath = zmath,
+        .zstbi = zstbi,
+        .zopengl = zopengl,
+        .zglfw = zglfw,
         .shader = shader_module,
         .camera = camera_module,
     };
@@ -172,7 +176,7 @@ const lighting = [_][]const u8{
 };
 
 const model_loading = [_][]const u8{
-    "1_1_model_loading",
+    "1.model_loading/model_loading",
 };
 
 const advanced_opengl = [_][]const u8{
