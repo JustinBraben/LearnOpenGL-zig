@@ -39,4 +39,8 @@ zig build run-2.1.hello_triangle
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+For the images, audios and models used under this repository (under the `resources` directory), licensed under the
+[CC BY 4.0](https://spdx.org/licenses/CC-BY-4.0.html) license as mentioned in
+[LearnOpenGL About](https://learnopengl.com/About) page.
+
+For the other parts, licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
