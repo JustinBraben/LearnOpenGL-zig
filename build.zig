@@ -3,136 +3,126 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-
-    const zglfw = b.dependency("zglfw", .{
-        .target = target,
-    });
-
-    const zopengl = b.dependency("zopengl", .{ .target = target });
-    const zstbi = b.dependency("zstbi", .{ .target = target });
-    const zmath = b.dependency("zmath", .{ .target = target });
-    const zgui = b.dependency("zgui", .{
-        .target = target,
-        .backend = .glfw_opengl3,
-    });
-
-    // modules
-    const shader_module = b.addModule("Shader", .{ .root_source_file = b.path("includes/learnopengl/shader.zig") });
-    shader_module.addImport("zopengl", zopengl.module("root"));
-    const common_module = b.addModule("common", .{ .root_source_file = b.path("includes/learnopengl/common.zig") });
-    const camera_module = b.addModule("Camera", .{ .root_source_file = b.path("includes/learnopengl/camera.zig") });
-    camera_module.addImport("zmath", zmath.module("root"));
-    camera_module.addImport("common", common_module);
-
-    // Build getting_started
-    const getting_started_step = b.step("getting_started", "Build getting_started examples");
-    for (getting_started) |example_name| {
-        var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
-        const actual_example_name = example_name_split_iter.next().?;
-        const example = b.addExecutable(.{
-            .name = actual_example_name,
-            .root_source_file = b.path(b.fmt("src/1.getting_started/{s}.zig", .{example_name})),
-            .target = target,
-            .optimize = optimize,
-        });
-
-        // Add imports and/or link libraries if necessary
-        example.root_module.addImport("zglfw", zglfw.module("root"));
-        example.linkLibrary(zglfw.artifact("glfw"));
-        example.root_module.addImport("zopengl", zopengl.module("root"));
-        example.root_module.addImport("zstbi", zstbi.module("root"));
-        example.linkLibrary(zstbi.artifact("zstbi"));
-        example.root_module.addImport("zgui", zgui.module("root"));
-        example.linkLibrary(zgui.artifact("imgui"));
-        example.root_module.addImport("zmath", zmath.module("root"));
-        example.root_module.addImport("Shader", shader_module);
-        example.root_module.addImport("common", common_module);
-        example.root_module.addImport("Camera", camera_module);
-
-        const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
-        compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
-        b.getInstallStep().dependOn(compile_step);
-
-        const run_cmd = b.addRunArtifact(example);
-        run_cmd.step.dependOn(compile_step);
-
-        const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
-        run_step.dependOn(&run_cmd.step);
-    }
-
-    const lighting_step = b.step("lighting", "Build lighting examples");
-    inline for (lighting) |example_name| {
-        var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
-        const actual_example_name = example_name_split_iter.next().?;
-        const example = b.addExecutable(.{
-            .name = actual_example_name,
-            .root_source_file = b.path("src/2.lighting/" ++ example_name ++ ".zig"),
-            .target = target,
-            .optimize = optimize,
-        });
-
-        // Add imports and/or link libraries if necessary
-        example.root_module.addImport("zglfw", zglfw.module("root"));
-        example.linkLibrary(zglfw.artifact("glfw"));
-        example.root_module.addImport("zopengl", zopengl.module("root"));
-        example.root_module.addImport("zstbi", zstbi.module("root"));
-        example.linkLibrary(zstbi.artifact("zstbi"));
-        example.root_module.addImport("zmath", zmath.module("root"));
-        example.root_module.addImport("Shader", shader_module);
-        example.root_module.addImport("common", common_module);
-        example.root_module.addImport("Camera", camera_module);
-
-        const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
-        compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
-        b.getInstallStep().dependOn(compile_step);
-
-        const run_cmd = b.addRunArtifact(example);
-        run_cmd.step.dependOn(compile_step);
-
-        const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
-        run_step.dependOn(&run_cmd.step);
-    }
-
-    const advanced_opengl_step = b.step("advanced_opengl", "Build lighting examples");
-    inline for (advanced_opengl) |example_name| {
-        var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
-        const actual_example_name = example_name_split_iter.next().?;
-        const example = b.addExecutable(.{
-            .name = actual_example_name,
-            .root_source_file = b.path("src/4.advanced_opengl/" ++ example_name ++ ".zig"),
-            .target = target,
-            .optimize = optimize,
-        });
-
-        // Add imports and/or link libraries if necessary
-        example.root_module.addImport("zglfw", zglfw.module("root"));
-        example.linkLibrary(zglfw.artifact("glfw"));
-        example.root_module.addImport("zopengl", zopengl.module("root"));
-        example.root_module.addImport("zstbi", zstbi.module("root"));
-        example.linkLibrary(zstbi.artifact("zstbi"));
-        example.root_module.addImport("zmath", zmath.module("root"));
-        example.root_module.addImport("Shader", shader_module);
-        example.root_module.addImport("common", common_module);
-        example.root_module.addImport("Camera", camera_module);
-
-        const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
-        compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
-        b.getInstallStep().dependOn(compile_step);
-
-        const run_cmd = b.addRunArtifact(example);
-        run_cmd.step.dependOn(compile_step);
-
-        const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
-        run_step.dependOn(&run_cmd.step);
-    }
-
+    
+    const modules = createModules(b, target, optimize);
+    
+    // Create categories
+    const getting_started_step = createCategory(
+        b, "getting_started", "1.getting_started", &getting_started, target, optimize, modules
+    ) catch unreachable;
+    
+    const lighting_step = createCategory(
+        b, "lighting", "2.lighting", &lighting, target, optimize, modules
+    ) catch unreachable;
+    
+    const advanced_opengl_step = createCategory(
+        b, "advanced_opengl", "4.advanced_opengl", &advanced_opengl, target, optimize, modules
+    ) catch unreachable;
+    
+    // Create "all" step
     const all_step = b.step("all", "Build everything and runs all tests");
     all_step.dependOn(getting_started_step);
     all_step.dependOn(lighting_step);
     // TODO: Add model loading step
     all_step.dependOn(advanced_opengl_step);
-
+    
     b.default_step.dependOn(all_step);
+}
+
+fn createCategory(
+    b: *std.Build,
+    category_name: []const u8,
+    folder_path: []const u8,
+    examples: []const []const u8,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+    modules: anytype,
+) !*std.Build.Step {
+    const category_step = b.step(category_name, b.fmt("Build {s} examples", .{category_name}));
+    for (examples) |example_name| {
+        var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
+        const actual_example_name = example_name_split_iter.next().?;
+        const example = b.addExecutable(.{
+            .name = actual_example_name,
+            .root_source_file = b.path(b.fmt("src/{s}/{s}.zig", .{folder_path, example_name})),
+            .target = target,
+            .optimize = optimize,
+        });
+
+        // Add common imports and libraries
+        example.root_module.addImport("zglfw", modules.zglfw.module("root"));
+        example.linkLibrary(modules.zglfw.artifact("glfw"));
+        example.root_module.addImport("zopengl", modules.zopengl.module("root"));
+        example.root_module.addImport("zstbi", modules.zstbi.module("root"));
+        example.linkLibrary(modules.zstbi.artifact("zstbi"));
+        example.root_module.addImport("zmath", modules.zmath.module("root"));
+        example.root_module.addImport("Shader", modules.shader);
+        example.root_module.addImport("common", modules.common);
+        example.root_module.addImport("Camera", modules.camera);
+
+        const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
+        compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
+        b.getInstallStep().dependOn(compile_step);
+
+        const run_cmd = b.addRunArtifact(example);
+        run_cmd.step.dependOn(compile_step);
+
+        const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
+        run_step.dependOn(&run_cmd.step);
+    }
+    
+    return category_step;
+}
+
+const Modules = struct {
+    zglfw: *std.Build.Dependency,
+    zopengl: *std.Build.Dependency,
+    zstbi: *std.Build.Dependency,
+    zmath: *std.Build.Dependency,
+    shader: *std.Build.Module,
+    common: *std.Build.Module,
+    camera: *std.Build.Module,
+};
+
+fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode,) Modules {
+    const zglfw = b.dependency("zglfw", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const zopengl = b.dependency("zopengl", .{ .target = target });
+    const zstbi = b.dependency("zstbi", .{ .target = target, .optimize = optimize, });
+    const zmath = b.dependency("zmath", .{ .target = target, .optimize = optimize, });
+
+    // modules
+    const shader_module = b.addModule("Shader", .{ 
+        .root_source_file = b.path("includes/learnopengl/shader.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    shader_module.addImport("zopengl", zopengl.module("root"));
+    const common_module = b.addModule("common", .{ 
+        .root_source_file = b.path("includes/learnopengl/common.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    const camera_module = b.addModule("Camera", .{ 
+        .root_source_file = b.path("includes/learnopengl/camera.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    camera_module.addImport("zmath", zmath.module("root"));
+    camera_module.addImport("common", common_module);
+    
+    return .{
+        .zglfw = zglfw,
+        .zopengl = zopengl,
+        .zstbi = zstbi,
+        .zmath = zmath,
+        .shader = shader_module,
+        .common = common_module,
+        .camera = camera_module,
+    };
 }
 
 const getting_started = [_][]const u8{
