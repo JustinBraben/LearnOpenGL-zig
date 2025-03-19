@@ -78,18 +78,11 @@ pub fn main() !void {
     zmesh.init(allocator);
     defer zmesh.deinit();
 
-    // const data = try zmesh.io.zcgltf.parseAndLoadFile("resources/objects/backpack/backpack.obj");
-    // defer zmesh.io.zcgltf.freeData(data);
-
     // After creating your cube
     var cube = zmesh.Shape.initCube();
     defer cube.deinit();
-
-    // Print debug information after computations
-    std.debug.print("Cube stats after processing:\n", .{});
-    std.debug.print("  - Positions: {d}\n", .{cube.positions.len});
-    std.debug.print("  - Has normals: {}\n", .{cube.normals != null});
-    std.debug.print("  - Has texcoords: {}\n", .{cube.texcoords != null});
+    // Unweld the cube to create distinct vertices for each face
+    cube.unweld();
 
     // cube VAO
     var cubeVAO: gl.Uint = undefined;
@@ -125,18 +118,56 @@ pub fn main() !void {
         gl.vertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, @sizeOf([3]f32), null);
     }
 
-    // Buffer the texture coordinate data (if available)
-    if (cube.texcoords) |texcoords| {
-        var texcoordVBO: gl.Uint = undefined;
-        gl.genBuffers(1, &texcoordVBO);
-        defer gl.deleteBuffers(1, &texcoordVBO);
-        
-        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordVBO);
-        gl.bufferData(gl.ARRAY_BUFFER, @intCast(texcoords.len * @sizeOf([2]f32)), texcoords.ptr, gl.STATIC_DRAW);
-        
-        gl.enableVertexAttribArray(2);
-        gl.vertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, @sizeOf([2]f32), null);
+    var texcoordVBO: gl.Uint = undefined;
+    gl.genBuffers(1, &texcoordVBO);
+    defer gl.deleteBuffers(1, &texcoordVBO);
+    
+    // Create texture coordinates for a cube (6 faces, 4 vertices per face)
+    // This is if the cube doesn't have texture coordinates already
+    const texcoords = try allocator.alloc([2]f32, cube.positions.len);
+    defer allocator.free(texcoords);
+
+    // Print vertex positions to verify ordering
+    for (cube.positions, 0..) |pos, i| {
+        std.debug.print("Vertex {d}: ({d:.1}, {d:.1}, {d:.1})\n", 
+            .{i, pos[0], pos[1], pos[2]});
     }
+
+    // The cube likely has 36 vertices (6 faces * 2 triangles * 3 vertices)
+    // Each face should have consistent texture coordinates
+    for (0..6) |face| {
+        // For each face, set texture coordinates for 6 vertices (2 triangles)
+        const base_idx = face * 6;
+        
+        // First triangle (bottom-left, bottom-right, top-right)
+        texcoords[base_idx + 0] = .{0.0, 0.0}; // bottom-left
+        texcoords[base_idx + 1] = .{1.0, 0.0}; // bottom-right
+        texcoords[base_idx + 2] = .{1.0, 1.0}; // top-right
+        
+        // Second triangle (top-right, top-left, bottom-left)
+        texcoords[base_idx + 3] = .{1.0, 1.0}; // top-right
+        texcoords[base_idx + 4] = .{0.0, 1.0}; // top-left
+        texcoords[base_idx + 5] = .{0.0, 0.0}; // bottom-left
+    }
+
+    // Print debug information after computations
+    std.debug.print("Cube stats after processing:\n", .{});
+    std.debug.print("  - Indices: {d}\n", .{cube.indices.len});
+    std.debug.print("  - Positions: {d}\n", .{cube.positions.len});
+    std.debug.print("  - Has normals: {}\n", .{cube.normals != null});
+    std.debug.print("  - Has texcoords: {}\n", .{cube.texcoords != null});
+
+    // Manually print texture coordinates to verify
+    std.debug.print("Added texcoords. First few: \n", .{});
+    for (texcoords, 0..) |coord, i| {
+        if (i < 8) std.debug.print("  [{d}]: ({d:.2}, {d:.2})\n", .{i, coord[0], coord[1]});
+    }
+
+    // Then use these texture coordinates in your rendering pipeline
+    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, @intCast(texcoords.len * @sizeOf([2]f32)), texcoords.ptr, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(2);
+    gl.vertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, @sizeOf([2]f32), null);
 
     // Buffer the indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeEBO);
