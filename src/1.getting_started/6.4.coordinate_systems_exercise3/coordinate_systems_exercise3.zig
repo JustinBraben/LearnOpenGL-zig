@@ -41,7 +41,7 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var shader_program: Shader = Shader.create(arena, "src/1.getting_started/6.3.coordinate_systems_multiple/6.3.coordinate_systems.vs", "src/1.getting_started/6.3.coordinate_systems_multiple/6.3.coordinate_systems.fs");
+    var shader_program: Shader = try Shader.create(arena, "src/1.getting_started/6.3.coordinate_systems_multiple/6.3.coordinate_systems.vs", "src/1.getting_started/6.3.coordinate_systems_multiple/6.3.coordinate_systems.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

@@ -73,7 +73,7 @@ pub fn main() !void {
 
     // build and compile shaders
     // -------------------------
-    var our_shader: Shader = Shader.create(arena, "src/3.model_loading/1.model_loading/1.model_loading.vs", "src/3.model_loading/1.model_loading/1.model_loading.fs");
+    var our_shader: Shader = try Shader.create(arena, "src/3.model_loading/1.model_loading/1.model_loading.vs", "src/3.model_loading/1.model_loading/1.model_loading.fs");
 
     // load models
     // -----------

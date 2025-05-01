@@ -73,8 +73,8 @@ pub fn main() !void {
 
     // build and compile shaders
     // -------------------------
-    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.vs", "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.fs");
-    var shader_single_color: Shader = Shader.create(arena, "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.vs", "src/4.advanced_opengl/2.stencil_testing/2.stencil_single_color.fs");
+    var shader: Shader = try Shader.create(arena, "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.vs", "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.fs");
+    var shader_single_color: Shader = try Shader.create(arena, "src/4.advanced_opengl/2.stencil_testing/2.stencil_testing.vs", "src/4.advanced_opengl/2.stencil_testing/2.stencil_single_color.fs");
 
     const cubeVertices = [_]gl.Float{
         // positions       // texture Coords

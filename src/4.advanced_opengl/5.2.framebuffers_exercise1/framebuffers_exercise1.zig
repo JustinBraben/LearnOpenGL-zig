@@ -69,8 +69,8 @@ pub fn main() !void {
 
     // build and compile shaders
     // -------------------------
-    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers.vs", "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers.fs");
-    var screenShader: Shader = Shader.create(arena, "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers_screen.vs", "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers_screen.fs");
+    var shader: Shader = try Shader.create(arena, "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers.vs", "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers.fs");
+    var screenShader: Shader = try Shader.create(arena, "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers_screen.vs", "src/4.advanced_opengl/5.2.framebuffers_exercise1/5.2.framebuffers_screen.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

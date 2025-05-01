@@ -68,8 +68,8 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.cubemaps.vs", "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.cubemaps.fs");
-    var skybox_shader: Shader = Shader.create(arena, "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.skybox.vs", "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.skybox.fs");
+    var shader: Shader = try Shader.create(arena, "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.cubemaps.vs", "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.cubemaps.fs");
+    var skybox_shader: Shader = try Shader.create(arena, "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.skybox.vs", "src/4.advanced_opengl/6.2.cubemaps_environment_mapping/6.2.skybox.fs");
 
     const cubeVertices = [_]gl.Float{
         // positions       // normals

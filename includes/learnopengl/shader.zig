@@ -6,14 +6,14 @@ const Shader = @This();
 // The program ID
 ID: c_uint,
 
-pub fn create(arena: std.mem.Allocator, vs_path: []const u8, fs_path: []const u8) Shader {
-    const vs_file = std.fs.cwd().openFile(vs_path, .{}) catch unreachable;
+pub fn create(arena: std.mem.Allocator, vs_path: []const u8, fs_path: []const u8) !Shader {
+    const vs_file = try std.fs.cwd().openFile(vs_path, .{});
     defer vs_file.close();
-    const vs_code = vs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0) catch unreachable;
+    const vs_code = try vs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0);
 
-    const fs_file = std.fs.cwd().openFile(fs_path, .{}) catch unreachable;
+    const fs_file = try std.fs.cwd().openFile(fs_path, .{});
     defer fs_file.close();
-    const fs_code = fs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0) catch unreachable;
+    const fs_code = try fs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0);
 
     // Check if shader was compiled successfully
     var success: c_int = undefined;
@@ -29,6 +29,7 @@ pub fn create(arena: std.mem.Allocator, vs_path: []const u8, fs_path: []const u8
     if (success == 0) {
         gl.getShaderInfoLog(vertexShader, 512, 0, &infoLog);
         std.log.err("{s}", .{infoLog});
+        return error.ShaderCompileError;
     }
 
     // Fragment shader
@@ -41,6 +42,7 @@ pub fn create(arena: std.mem.Allocator, vs_path: []const u8, fs_path: []const u8
     if (success == 0) {
         gl.getShaderInfoLog(fragmentShader, 512, 0, &infoLog);
         std.log.err("{s}", .{infoLog});
+        return error.ShaderCompileError;
     }
 
     // create a program object
@@ -56,22 +58,23 @@ pub fn create(arena: std.mem.Allocator, vs_path: []const u8, fs_path: []const u8
     if (success == 0) {
         gl.getProgramInfoLog(shaderProgram, 512, 0, &infoLog);
         std.log.err("{s}", .{infoLog});
+        return error.ShaderLinkError;
     }
     return Shader{ .ID = shaderProgram };
 }
 
-pub fn createGeometryShader(arena: std.mem.Allocator, vs_path: []const u8, fs_path: []const u8, gs_path: []const u8) Shader {
-    const vs_file = std.fs.cwd().openFile(vs_path, .{}) catch unreachable;
+pub fn createGeometryShader(arena: std.mem.Allocator, vs_path: []const u8, fs_path: []const u8, gs_path: []const u8) !Shader {
+    const vs_file = try std.fs.cwd().openFile(vs_path, .{});
     defer vs_file.close();
-    const vs_code = vs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0) catch unreachable;
+    const vs_code = try vs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0);
 
-    const fs_file = std.fs.cwd().openFile(fs_path, .{}) catch unreachable;
+    const fs_file = try std.fs.cwd().openFile(fs_path, .{});
     defer fs_file.close();
-    const fs_code = fs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0) catch unreachable;
+    const fs_code = try fs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0);
 
-    const gs_file = std.fs.cwd().openFile(gs_path, .{}) catch unreachable;
+    const gs_file = try std.fs.cwd().openFile(gs_path, .{});
     defer gs_file.close();
-    const gs_code = gs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0) catch unreachable;
+    const gs_code = try gs_file.readToEndAllocOptions(arena, (10 * 1024), null, @alignOf(u8), 0);
 
     // Check if shader was compiled successfully
     var success: c_int = undefined;
@@ -87,6 +90,7 @@ pub fn createGeometryShader(arena: std.mem.Allocator, vs_path: []const u8, fs_pa
     if (success == 0) {
         gl.getShaderInfoLog(vertexShader, 512, 0, &infoLog);
         std.log.err("{s}", .{infoLog});
+        return error.ShaderCompileError;
     }
 
     // Fragment shader
@@ -99,6 +103,7 @@ pub fn createGeometryShader(arena: std.mem.Allocator, vs_path: []const u8, fs_pa
     if (success == 0) {
         gl.getShaderInfoLog(fragmentShader, 512, 0, &infoLog);
         std.log.err("{s}", .{infoLog});
+        return error.ShaderCompileError;
     }
 
     // Geometry shader
@@ -111,6 +116,7 @@ pub fn createGeometryShader(arena: std.mem.Allocator, vs_path: []const u8, fs_pa
     if (success == 0) {
         gl.getShaderInfoLog(geometryShader, 512, 0, &infoLog);
         std.log.err("{s}", .{infoLog});
+        return error.ShaderCompileError;
     }
 
     // create a program object
@@ -127,6 +133,7 @@ pub fn createGeometryShader(arena: std.mem.Allocator, vs_path: []const u8, fs_pa
     if (success == 0) {
         gl.getProgramInfoLog(shaderProgram, 512, 0, &infoLog);
         std.log.err("{s}", .{infoLog});
+        return error.ShaderLinkError;
     }
     return Shader{ .ID = shaderProgram };
 }

@@ -68,8 +68,8 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/6.1.multiple_lights/6.1.multiple_lights.vs", "src/2.lighting/6.1.multiple_lights/6.1.multiple_lights.fs");
-    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/6.1.multiple_lights/6.1.light_cube.vs", "src/2.lighting/6.1.multiple_lights/6.1.light_cube.fs");
+    var lighting_shader: Shader = try Shader.create(arena, "src/2.lighting/6.1.multiple_lights/6.1.multiple_lights.vs", "src/2.lighting/6.1.multiple_lights/6.1.multiple_lights.fs");
+    var lighting_cube_shader: Shader = try Shader.create(arena, "src/2.lighting/6.1.multiple_lights/6.1.light_cube.vs", "src/2.lighting/6.1.multiple_lights/6.1.light_cube.fs");
 
     const theme: EnvironmentTheme = .BiochemicalLab;
 

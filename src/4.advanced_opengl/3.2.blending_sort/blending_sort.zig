@@ -85,7 +85,7 @@ pub fn main() !void {
 
     // build and compile shaders
     // -------------------------
-    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/3.2.blending_sort/3.2.blending.vs", "src/4.advanced_opengl/3.2.blending_sort/3.2.blending.fs");
+    var shader: Shader = try Shader.create(arena, "src/4.advanced_opengl/3.2.blending_sort/3.2.blending.vs", "src/4.advanced_opengl/3.2.blending_sort/3.2.blending.fs");
 
     const cube_vertices = [_]gl.Float{
         // positions       // texture Coords

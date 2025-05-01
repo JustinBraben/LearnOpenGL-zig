@@ -70,7 +70,7 @@ pub fn main() !void {
 
     // build and compile shaders
     // -------------------------
-    var shader: Shader = Shader.create(arena, "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.vs", "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.fs");
+    var shader: Shader = try Shader.create(arena, "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.vs", "src/4.advanced_opengl/1.2.depth_testing_view/1.2.depth_testing.fs");
 
     const cubeVertices = [_]gl.Float{
         // positions       // texture Coords

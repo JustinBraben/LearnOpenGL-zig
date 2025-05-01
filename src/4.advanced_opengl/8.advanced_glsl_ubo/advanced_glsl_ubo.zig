@@ -68,10 +68,10 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var shader_red = Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.red.fs");
-    var shader_green = Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.green.fs");
-    var shader_blue = Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.blue.fs");
-    var shader_yellow = Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.yellow.fs");
+    var shader_red = try Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.red.fs");
+    var shader_green = try Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.green.fs");
+    var shader_blue = try Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.blue.fs");
+    var shader_yellow = try Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.yellow.fs");
 
     const cubeVertices = [_]gl.Float{
         // positions         

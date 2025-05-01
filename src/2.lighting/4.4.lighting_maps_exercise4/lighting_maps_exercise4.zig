@@ -68,8 +68,8 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/4.4.lighting_maps_exercise4/4.4.lighting_maps.vs", "src/2.lighting/4.4.lighting_maps_exercise4/4.4.lighting_maps.fs");
-    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/4.4.lighting_maps_exercise4/4.4.light_cube.vs", "src/2.lighting/4.4.lighting_maps_exercise4/4.4.light_cube.fs");
+    var lighting_shader: Shader = try Shader.create(arena, "src/2.lighting/4.4.lighting_maps_exercise4/4.4.lighting_maps.vs", "src/2.lighting/4.4.lighting_maps_exercise4/4.4.lighting_maps.fs");
+    var lighting_cube_shader: Shader = try Shader.create(arena, "src/2.lighting/4.4.lighting_maps_exercise4/4.4.light_cube.vs", "src/2.lighting/4.4.lighting_maps_exercise4/4.4.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

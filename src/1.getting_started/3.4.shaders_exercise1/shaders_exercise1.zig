@@ -35,7 +35,7 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var shader_program: Shader = Shader.create(arena_allocator, "src/1.getting_started/3.4.shaders_exercise1/3.4.shader.vs", "src/1.getting_started/3.3.shaders_class/3.3.shader.fs");
+    var shader_program: Shader = try Shader.create(arena_allocator, "src/1.getting_started/3.4.shaders_exercise1/3.4.shader.vs", "src/1.getting_started/3.3.shaders_class/3.3.shader.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

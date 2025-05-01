@@ -68,7 +68,7 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var shader = Shader.createGeometryShader(
+    var shader = try Shader.createGeometryShader(
         arena, 
         "src/4.advanced_opengl/9.1.geometry_shader_houses/9.1.geometry_shader.vs", 
         "src/4.advanced_opengl/9.1.geometry_shader_houses/9.1.geometry_shader.fs",

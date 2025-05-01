@@ -61,7 +61,7 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var shader_program: Shader = Shader.create(arena, "src/1.getting_started/7.4.camera_class/7.4.camera.vs", "src/1.getting_started/7.4.camera_class/7.4.camera.fs");
+    var shader_program: Shader = try Shader.create(arena, "src/1.getting_started/7.4.camera_class/7.4.camera.vs", "src/1.getting_started/7.4.camera_class/7.4.camera.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

@@ -64,8 +64,8 @@ pub fn main() !void {
     glfw.swapInterval(1);
 
     // create shader program
-    var lighting_shader: Shader = Shader.create(arena, "src/2.lighting/2.4.basic_lighting_exercise2/2.4.basic_lighting.vs", "src/2.lighting/2.4.basic_lighting_exercise2/2.4.basic_lighting.fs");
-    var lighting_cube_shader: Shader = Shader.create(arena, "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.vs", "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.fs");
+    var lighting_shader: Shader = try Shader.create(arena, "src/2.lighting/2.4.basic_lighting_exercise2/2.4.basic_lighting.vs", "src/2.lighting/2.4.basic_lighting_exercise2/2.4.basic_lighting.fs");
+    var lighting_cube_shader: Shader = try Shader.create(arena, "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.vs", "src/2.lighting/2.2.basic_lighting_specular/2.2.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

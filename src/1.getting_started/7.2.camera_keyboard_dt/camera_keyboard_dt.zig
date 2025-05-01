@@ -46,7 +46,7 @@ pub fn main() !void {
     const cameraUp = zm.f32x4(0.0, 1.0, 0.0, 1.0);
 
     // create shader program
-    var shader_program: Shader = Shader.create(arena, "src/1.getting_started/7.2.camera_keyboard_dt/7.2.camera.vs", "src/1.getting_started/7.2.camera_keyboard_dt/7.2.camera.fs");
+    var shader_program: Shader = try Shader.create(arena, "src/1.getting_started/7.2.camera_keyboard_dt/7.2.camera.vs", "src/1.getting_started/7.2.camera_keyboard_dt/7.2.camera.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
