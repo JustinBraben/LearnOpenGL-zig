@@ -219,4 +219,5 @@ const advanced_opengl = [_][]const u8{
     "6.1.cubemaps_skybox/cubemaps_skybox",
     "6.2.cubemaps_environment_mapping/cubemaps_environment_mapping",
     "8.advanced_glsl_ubo/advanced_glsl_ubo",
+    "9.1.geometry_shader_houses/geometry_shader_houses"
 };

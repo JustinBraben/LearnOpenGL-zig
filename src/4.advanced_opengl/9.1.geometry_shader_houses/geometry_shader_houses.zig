@@ -68,7 +68,12 @@ pub fn main() !void {
     gl.enable(gl.DEPTH_TEST);
 
     // create shader program
-    var shader = Shader.create(arena, "src/4.advanced_opengl/8.advanced_glsl_ubo/8.advanced_glsl.vs", "src/4.advanced_opengl/8.advanced_glsl_ubo/8.red.fs");
+    var shader = Shader.createGeometryShader(
+        arena, 
+        "src/4.advanced_opengl/9.1.geometry_shader_houses/9.1.geometry_shader.vs", 
+        "src/4.advanced_opengl/9.1.geometry_shader_houses/9.1.geometry_shader.fs",
+        "src/4.advanced_opengl/9.1.geometry_shader_houses/9.1.geometry_shader.gs"
+    );
 
     const points = [_]gl.Float{
         -0.5,  0.5, 1.0, 0.0, 0.0, // top-left
@@ -134,12 +139,13 @@ pub fn main() !void {
         // set the view and projection matrix in the uniform block - we only have to do this once per loop iteration.
         zm.storeMat(&view, camera.getViewMatrix());
 
-        // draw 4 cubes 
-        // RED
+        // draw points
         shader.use();
         gl.bindVertexArray(VAO);
         gl.drawArrays(gl.POINTS, 0, 4);
 
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
         window.swapBuffers();
         glfw.pollEvents();
     }
