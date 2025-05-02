@@ -16,7 +16,7 @@ To build everything, switch to the repository root directory and run:
 zig build
 ```
 
-To see which examples to explicitly run, use:
+To see which examples to explicitly build/run, use:
 
 ```shell
 zig build -l
