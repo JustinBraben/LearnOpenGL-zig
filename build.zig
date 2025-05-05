@@ -22,6 +22,10 @@ pub fn build(b: *std.Build) void {
     const advanced_opengl_step = createCategory(
         b, "advanced_opengl", "4.advanced_opengl", &advanced_opengl, target, optimize, modules
     ) catch unreachable;
+
+    const advanced_lighting_step = createCategory(
+        b, "advanced_lighting", "5.advanced_lighting", &advanced_lighting, target, optimize, modules
+    ) catch unreachable;
     
     // Create "all" step
     const all_step = b.step("all", "Build everything and runs all tests");
@@ -29,6 +33,7 @@ pub fn build(b: *std.Build) void {
     all_step.dependOn(lighting_step);
     all_step.dependOn(model_loading_step);
     all_step.dependOn(advanced_opengl_step);
+    all_step.dependOn(advanced_lighting_step);
     
     b.default_step.dependOn(all_step);
 }
@@ -220,4 +225,8 @@ const advanced_opengl = [_][]const u8{
     "6.2.cubemaps_environment_mapping/cubemaps_environment_mapping",
     "8.advanced_glsl_ubo/advanced_glsl_ubo",
     "9.1.geometry_shader_houses/geometry_shader_houses"
+};
+
+const advanced_lighting = [_][]const u8{
+    "1.advanced_lighting/advanced_lighting",
 };
