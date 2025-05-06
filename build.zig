@@ -3,30 +3,20 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    
+
     const modules = createModules(b, target, optimize);
-    
+
     // Create categories
-    const getting_started_step = createCategory(
-        b, "getting_started", "1.getting_started", &getting_started, target, optimize, modules
-    ) catch unreachable;
-    
-    const lighting_step = createCategory(
-        b, "lighting", "2.lighting", &lighting, target, optimize, modules
-    ) catch unreachable;
+    const getting_started_step = createCategory(b, "getting_started", "1.getting_started", &getting_started, target, optimize, modules) catch unreachable;
 
-    const model_loading_step = createCategory(
-        b, "model_loading", "3.model_loading", &model_loading, target, optimize, modules
-    ) catch unreachable;
-    
-    const advanced_opengl_step = createCategory(
-        b, "advanced_opengl", "4.advanced_opengl", &advanced_opengl, target, optimize, modules
-    ) catch unreachable;
+    const lighting_step = createCategory(b, "lighting", "2.lighting", &lighting, target, optimize, modules) catch unreachable;
 
-    const advanced_lighting_step = createCategory(
-        b, "advanced_lighting", "5.advanced_lighting", &advanced_lighting, target, optimize, modules
-    ) catch unreachable;
-    
+    const model_loading_step = createCategory(b, "model_loading", "3.model_loading", &model_loading, target, optimize, modules) catch unreachable;
+
+    const advanced_opengl_step = createCategory(b, "advanced_opengl", "4.advanced_opengl", &advanced_opengl, target, optimize, modules) catch unreachable;
+
+    const advanced_lighting_step = createCategory(b, "advanced_lighting", "5.advanced_lighting", &advanced_lighting, target, optimize, modules) catch unreachable;
+
     // Create "all" step
     const all_step = b.step("all", "Build everything and runs all tests");
     all_step.dependOn(getting_started_step);
@@ -34,7 +24,7 @@ pub fn build(b: *std.Build) void {
     all_step.dependOn(model_loading_step);
     all_step.dependOn(advanced_opengl_step);
     all_step.dependOn(advanced_lighting_step);
-    
+
     b.default_step.dependOn(all_step);
 }
 
@@ -53,7 +43,7 @@ fn createCategory(
         const actual_example_name = example_name_split_iter.next().?;
         const example = b.addExecutable(.{
             .name = actual_example_name,
-            .root_source_file = b.path(b.fmt("src/{s}/{s}.zig", .{folder_path, example_name})),
+            .root_source_file = b.path(b.fmt("src/{s}/{s}.zig", .{ folder_path, example_name })),
             .target = target,
             .optimize = optimize,
         });
@@ -82,7 +72,7 @@ fn createCategory(
         const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
         run_step.dependOn(&run_cmd.step);
     }
-    
+
     return category_step;
 }
 
@@ -99,46 +89,59 @@ const Modules = struct {
     model: *std.Build.Module,
 };
 
-fn createModules(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode,) Modules {
+fn createModules(
+    b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+) Modules {
     const zglfw = b.dependency("zglfw", .{
         .target = target,
         .optimize = optimize,
     });
 
     const zopengl = b.dependency("zopengl", .{ .target = target });
-    const zstbi = b.dependency("zstbi", .{ .target = target, .optimize = optimize, });
-    const zmath = b.dependency("zmath", .{ .target = target, .optimize = optimize, });
-    const zmesh = b.dependency("zmesh", .{ .target = target, .optimize = optimize,});
+    const zstbi = b.dependency("zstbi", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zmath = b.dependency("zmath", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zmesh = b.dependency("zmesh", .{
+        .target = target,
+        .optimize = optimize,
+    });
     const obj = b.dependency("obj", .{ .target = target, .optimize = optimize });
 
     // modules
-    const shader_module = b.addModule("Shader", .{ 
+    const shader_module = b.addModule("Shader", .{
         .root_source_file = b.path("includes/learnopengl/shader.zig"),
         .target = target,
         .optimize = optimize,
     });
     shader_module.addImport("zopengl", zopengl.module("root"));
-    const camera_module = b.addModule("Camera", .{ 
+    const camera_module = b.addModule("Camera", .{
         .root_source_file = b.path("includes/learnopengl/camera.zig"),
         .target = target,
         .optimize = optimize,
     });
     camera_module.addImport("zmath", zmath.module("root"));
-    const mesh_module = b.addModule("Mesh", .{ 
+    const mesh_module = b.addModule("Mesh", .{
         .root_source_file = b.path("includes/learnopengl/mesh.zig"),
         .target = target,
         .optimize = optimize,
     });
     mesh_module.addImport("zopengl", zopengl.module("root"));
     const obj_module = obj.module("obj");
-    const model_module = b.addModule("Model", .{ 
+    const model_module = b.addModule("Model", .{
         .root_source_file = b.path("includes/learnopengl/model.zig"),
         .target = target,
         .optimize = optimize,
     });
     model_module.addImport("obj", obj_module);
     model_module.addImport("zopengl", zopengl.module("root"));
-    
+
     return .{
         .zmath = zmath,
         .zstbi = zstbi,
@@ -229,4 +232,5 @@ const advanced_opengl = [_][]const u8{
 
 const advanced_lighting = [_][]const u8{
     "1.advanced_lighting/advanced_lighting",
+    "2.gamma_correction/gamma_correction",
 };
