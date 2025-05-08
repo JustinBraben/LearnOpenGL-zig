@@ -69,26 +69,31 @@ pub fn main() !void {
     // configure global opengl state
     // -----------------------------
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // build and compile shaders
     // -------------------------
-    var shader = try Shader.create(
+    var simpleDepthShader = try Shader.create(
         arena,
-        "src/5.advanced_lighting/2.gamma_correction/2.gamma_correction.vs",
-        "src/5.advanced_lighting/2.gamma_correction/2.gamma_correction.fs",
+        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.shadow_mapping_depth.vs",
+        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.shadow_mapping_depth.fs",
+    );
+    var debugDepthQuad = try Shader.create(
+        arena,
+        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.debug_quad.vs",
+        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.debug_quad_depth.fs",
     );
 
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
     const planeVertices = [_]gl.Float{
         // positions         // normals      // texcoords
-        10.0,  -0.5, 10.0,  0.0, 1.0, 0.0, 10.0, 0.0,
-        -10.0, -0.5, 10.0,  0.0, 1.0, 0.0, 0.0,  0.0,
-        -10.0, -0.5, -10.0, 0.0, 1.0, 0.0, 0.0,  10.0,
+        25.0,  -0.5, 25.0,  0.0, 1.0, 0.0, 25.0, 0.0,
+        -25.0, -0.5, 25.0,  0.0, 1.0, 0.0, 0.0,  0.0,
+        -25.0, -0.5, -25.0, 0.0, 1.0, 0.0, 0.0,  25.0,
 
-        10.0,  -0.5, 10.0,  0.0, 1.0, 0.0, 10.0, 0.0,
-        -10.0, -0.5, -10.0, 0.0, 1.0, 0.0, 0.0,  10.0,
-        10.0,  -0.5, -10.0, 0.0, 1.0, 0.0, 10.0, 10.0,
+        25.0,  -0.5, 25.0,  0.0, 1.0, 0.0, 25.0, 0.0,
+        -25.0, -0.5, -25.0, 0.0, 1.0, 0.0, 0.0,  25.0,
+        25.0,  -0.5, -25.0, 0.0, 1.0, 0.0, 25.0, 25.0,
     };
 
     // cube VAO
@@ -123,10 +128,30 @@ pub fn main() !void {
 
     // load textures
     // -------------
-    var floorTexture: gl.Uint = undefined;
-    var floorTextureGammaCorrected: gl.Uint = undefined;
-    floorTexture = try loadTexture(floor_path, false);
-    floorTextureGammaCorrected = try loadTexture(floor_path, true);
+    var woodTexture: gl.Uint = undefined;
+    woodTexture = try loadTexture(floor_path, false);
+
+    // configure depth map FBO
+    // -----------------------
+    const SHADOW_WIDTH: gl.Uint = 1024; 
+    const SHADOW_HEIGHT: gl.Uint = 1024;
+    var depthMapFBO: gl.Uint = undefined;
+    gl.genFramebuffers(1, &depthMapFBO);
+    // create depth texture
+    var depthMap: gl.Uint = undefined;
+    gl.genTextures(1, &depthMap);
+    gl.bindTexture(gl.TEXTURE_2D, depthMap);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, gl.DEPTH_COMPONENT, gl.FLOAT, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    // attach depth texture as FBO's depth buffer
+    gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthMap, 0);
+    gl.drawBuffer(gl.NONE);
+    gl.readBuffer(gl.NONE);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, 0);
 
     // Buffer to store Model matrix
     var model: [16]f32 = undefined;
@@ -143,21 +168,15 @@ pub fn main() !void {
 
     // shader configuration
     // --------------------
-    shader.use();
-    shader.setInt("floorTexture", 0);
+    debugDepthQuad.use();
+    debugDepthQuad.setInt("depthMap", 0);
 
-    const lightPositions = [_]f32{
-        -3.0, 0.0, 0.0,
-        -1.0, 0.0, 0.0,
-        1.0,  0.0, 0.0,
-        3.0,  0.0, 0.0,
+    // lighting info
+    // -------------
+    const lightPos = [_]f32{
+        -2.0, 4.0, -1.0,
     };
-    const lightColors = [_]f32{
-        0.25, 0.25, 0.25,
-        0.50, 0.50, 0.50,
-        0.75, 0.75, 0.75,
-        1.00, 1.00, 1.00,
-    };
+    _ = lightPos;
 
     // render loop
     // -----------
@@ -177,22 +196,24 @@ pub fn main() !void {
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        // draw objects
-        shader.use();
+        // 1. render depth of scene to texture (from light's perspective)
+        // --------------------------------------------------------------
+
+
+        // render scene from light's point of view
+        simpleDepthShader.use();
         zm.storeMat(&model, zm.identity());
         zm.storeMat(&view, camera.getViewMatrix());
-        shader.setMat4f("projection", projection);
-        shader.setMat4f("view", view);
-        // set light uniforms
-        gl.uniform3fv(gl.getUniformLocation(shader.ID, "lightPositions"), 4, &lightPositions);
-        gl.uniform3fv(gl.getUniformLocation(shader.ID, "lightColors"), 4, &lightColors);
-        shader.setVec3f("viewPos", camera.getViewPos());
-        shader.setBool("gamma", gammaEnabled);
-        // floor
-        gl.bindVertexArray(planeVAO);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, if (gammaEnabled) floorTextureGammaCorrected else floorTexture);
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        // simpleDepthShader.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+
+        // render Depth map to quad for visual debugging
+        // ---------------------------------------------
+        // debugDepthQuad.use();
+        // debugDepthQuad.setFloat("near_plane", near_plane);
+        // debugDepthQuad.setFloat("far_plane", far_plane);
+        // gl.activeTexture(gl.TEXTURE0);
+        // gl.bindTexture(gl.TEXTURE_2D, depthMap);
+        // renderQuad();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
