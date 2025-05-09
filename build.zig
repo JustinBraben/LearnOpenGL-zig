@@ -233,4 +233,5 @@ const advanced_opengl = [_][]const u8{
 const advanced_lighting = [_][]const u8{
     "1.advanced_lighting/advanced_lighting",
     "2.gamma_correction/gamma_correction",
+    "3.1.1.shadow_mapping_depth/shadow_mapping_depth",
 };

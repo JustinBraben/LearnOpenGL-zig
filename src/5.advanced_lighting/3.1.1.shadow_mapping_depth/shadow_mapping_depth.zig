@@ -29,8 +29,7 @@ var camera = Camera.init(camera_pos);
 var delta_time: f32 = 0.0;
 var last_frame: f32 = 0.0;
 
-// lighting
-var light_position = [_]f32{ 4.2, 2.0, 4.0 };
+var planeVAO: gl.Uint = undefined;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -86,18 +85,17 @@ pub fn main() !void {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     const planeVertices = [_]gl.Float{
-        // positions         // normals      // texcoords
-        25.0,  -0.5, 25.0,  0.0, 1.0, 0.0, 25.0, 0.0,
-        -25.0, -0.5, 25.0,  0.0, 1.0, 0.0, 0.0,  0.0,
-        -25.0, -0.5, -25.0, 0.0, 1.0, 0.0, 0.0,  25.0,
+        // positions            // normals         // texcoords
+         25.0, -0.5,  25.0,  0.0, 1.0, 0.0,  25.0,  0.0,
+        -25.0, -0.5,  25.0,  0.0, 1.0, 0.0,   0.0,  0.0,
+        -25.0, -0.5, -25.0,  0.0, 1.0, 0.0,   0.0, 25.0,
 
-        25.0,  -0.5, 25.0,  0.0, 1.0, 0.0, 25.0, 0.0,
-        -25.0, -0.5, -25.0, 0.0, 1.0, 0.0, 0.0,  25.0,
-        25.0,  -0.5, -25.0, 0.0, 1.0, 0.0, 25.0, 25.0,
+         25.0, -0.5,  25.0,  0.0, 1.0, 0.0,  25.0,  0.0,
+        -25.0, -0.5, -25.0,  0.0, 1.0, 0.0,   0.0, 25.0,
+         25.0, -0.5, -25.0,  0.0, 1.0, 0.0,  25.0, 25.0
     };
 
     // cube VAO
-    var planeVAO: gl.Uint = undefined;
     var planeVBO: gl.Uint = undefined;
 
     gl.genVertexArrays(1, &planeVAO);
@@ -144,27 +142,33 @@ pub fn main() !void {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, gl.DEPTH_COMPONENT, gl.FLOAT, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_BORDER);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_BORDER);
+    const borderColor = [_]gl.Float{ 1.0, 1.0, 1.0, 1.0 };
+    gl.texParameterfv(gl.TEXTURE_2D, gl.TEXTURE_BORDER_COLOR, &borderColor);
     // attach depth texture as FBO's depth buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthMap, 0);
     gl.drawBuffer(gl.NONE);
     gl.readBuffer(gl.NONE);
+    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status != gl.FRAMEBUFFER_COMPLETE) {
+        std.debug.print("Framebuffer not complete: {}\n", .{status});
+    }
     gl.bindFramebuffer(gl.FRAMEBUFFER, 0);
 
-    // Buffer to store Model matrix
-    var model: [16]f32 = undefined;
-    // View matrix
-    var view: [16]f32 = undefined;
+    // // Buffer to store Model matrix
+    // var model: [16]f32 = undefined;
+    // // View matrix
+    // var view: [16]f32 = undefined;
     // Buffer to store Ortho-projection matrix (in render loop)
-    var projection: [16]f32 = undefined;
+    // var projection: [16]f32 = undefined;
 
-    // store the projection matrix (we only do this once now) (note: we're not using zoom anymore by changing the FoV)
-    const window_size = window.getSize();
-    const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
-    const projectionM = zm.perspectiveFovRhGl(45.0, aspect_ratio, 0.1, 100.0);
-    zm.storeMat(&projection, projectionM);
+    // // store the projection matrix (we only do this once now) (note: we're not using zoom anymore by changing the FoV)
+    // const window_size = window.getSize();
+    // const aspect_ratio: f32 = @as(f32, @floatFromInt(window_size[0])) / @as(f32, @floatFromInt(window_size[1]));
+    // const projectionM = zm.perspectiveFovRhGl(45.0, aspect_ratio, 0.1, 100.0);
+    // zm.storeMat(&projection, projectionM);
 
     // shader configuration
     // --------------------
@@ -173,10 +177,9 @@ pub fn main() !void {
 
     // lighting info
     // -------------
-    const lightPos = [_]f32{
-        -2.0, 4.0, -1.0,
+    const lightPos: zm.Vec = .{
+        -2.0, 4.0, -1.0, 0.0,
     };
-    _ = lightPos;
 
     // render loop
     // -----------
@@ -198,22 +201,45 @@ pub fn main() !void {
 
         // 1. render depth of scene to texture (from light's perspective)
         // --------------------------------------------------------------
-
-
+        var lightProjection: [16]f32 = undefined;
+        var lightView: [16]f32 = undefined;
+        var lightSpaceMatrix: [16]f32 = undefined;
+        const near_plane: f32 = 1.0;
+        const far_plane: f32 = 7.5;
+        zm.storeMat(&lightProjection, zm.orthographicOffCenterLh(
+            -10.0, // left
+            10.0,  // right
+            -10.0, // bottom
+            10.0,  // top
+            near_plane,
+            far_plane
+        ));
+        zm.storeMat(&lightView, zm.lookAtLh(lightPos, .{0.0, 0.0, 0.0, 0.0}, .{0.0, 1.0, 0.0, 0.0}));
+        zm.storeMat(&lightSpaceMatrix, zm.mul(zm.matFromArr(lightProjection), zm.matFromArr(lightView)));
         // render scene from light's point of view
         simpleDepthShader.use();
-        zm.storeMat(&model, zm.identity());
-        zm.storeMat(&view, camera.getViewMatrix());
-        // simpleDepthShader.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+        simpleDepthShader.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+
+        gl.viewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, woodTexture);
+        renderScene(&simpleDepthShader);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, 0);
+
+        // reset viewport
+        gl.viewport(0, 0, config.width, config.height);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // render Depth map to quad for visual debugging
         // ---------------------------------------------
-        // debugDepthQuad.use();
-        // debugDepthQuad.setFloat("near_plane", near_plane);
-        // debugDepthQuad.setFloat("far_plane", far_plane);
+        debugDepthQuad.use();
+        debugDepthQuad.setFloat("near_plane", near_plane);
+        debugDepthQuad.setFloat("far_plane", far_plane);
         // gl.activeTexture(gl.TEXTURE0);
         // gl.bindTexture(gl.TEXTURE_2D, depthMap);
-        // renderQuad();
+        renderQuad();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -222,8 +248,145 @@ pub fn main() !void {
     }
 }
 
+// renders the 3D scene
+// --------------------
+fn renderScene(shader: *const Shader) void {
+    // floor
+    var model: [16]f32 = undefined;
+    zm.storeMat(&model, zm.identity());
+    shader.setMat4f("model", model);
+    gl.bindVertexArray(planeVAO);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    // cubes
+    zm.storeMat(&model, zm.identity());
+    zm.storeMat(&model, zm.mul(zm.scaling(0.5, 0.5, 0.5), zm.translation(0.0, 1.5, 0.0)));
+    shader.setMat4f("model", model);
+    renderCube();
+    zm.storeMat(&model, zm.identity());
+    zm.storeMat(&model, zm.mul(zm.scaling(0.5, 0.5, 0.5), zm.translation(2.0, 0.0, 1.0)));
+    shader.setMat4f("model", model);
+    renderCube();
+    zm.storeMat(&model, zm.identity());
+    zm.storeMat(&model, zm.mul(zm.translation(-1.0, 0.0, 2.0), zm.rotationX(math.degreesToRadians(60.0))));
+    // model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    zm.storeMat(&model, zm.mul(zm.matFromArr(model), zm.scaling(0.25, 0.25, 0.25)));
+    // model = glm::scale(model, glm::vec3(0.25));
+    shader.setMat4f("model", model);
+    renderCube();
+}
+
+// renderCube() renders a 1x1 3D cube in NDC.
+// -------------------------------------------------
+var cubeVAO: gl.Uint = 0;
+var cubeVBO: gl.Uint = 0;
+fn renderCube() void {
+    // initialize (if necessary)
+    if (cubeVAO == 0)
+    {
+        const vertices = [_]f32{
+            // back face
+            -1.0, -1.0, -1.0,  0.0,  0.0, -1.0, 0.0, 0.0, // bottom-left
+             1.0,  1.0, -1.0,  0.0,  0.0, -1.0, 1.0, 1.0, // top-right
+             1.0, -1.0, -1.0,  0.0,  0.0, -1.0, 1.0, 0.0, // bottom-right         
+             1.0,  1.0, -1.0,  0.0,  0.0, -1.0, 1.0, 1.0, // top-right
+            -1.0, -1.0, -1.0,  0.0,  0.0, -1.0, 0.0, 0.0, // bottom-left
+            -1.0,  1.0, -1.0,  0.0,  0.0, -1.0, 0.0, 1.0, // top-left
+            // front face
+            -1.0, -1.0,  1.0,  0.0,  0.0,  1.0, 0.0, 0.0, // bottom-left
+             1.0, -1.0,  1.0,  0.0,  0.0,  1.0, 1.0, 0.0, // bottom-right
+             1.0,  1.0,  1.0,  0.0,  0.0,  1.0, 1.0, 1.0, // top-right
+             1.0,  1.0,  1.0,  0.0,  0.0,  1.0, 1.0, 1.0, // top-right
+            -1.0,  1.0,  1.0,  0.0,  0.0,  1.0, 0.0, 1.0, // top-left
+            -1.0, -1.0,  1.0,  0.0,  0.0,  1.0, 0.0, 0.0, // bottom-left
+            // left face
+            -1.0,  1.0,  1.0, -1.0,  0.0,  0.0, 1.0, 0.0, // top-right
+            -1.0,  1.0, -1.0, -1.0,  0.0,  0.0, 1.0, 1.0, // top-left
+            -1.0, -1.0, -1.0, -1.0,  0.0,  0.0, 0.0, 1.0, // bottom-left
+            -1.0, -1.0, -1.0, -1.0,  0.0,  0.0, 0.0, 1.0, // bottom-left
+            -1.0, -1.0,  1.0, -1.0,  0.0,  0.0, 0.0, 0.0, // bottom-right
+            -1.0,  1.0,  1.0, -1.0,  0.0,  0.0, 1.0, 0.0, // top-right
+            // right face
+             1.0,  1.0,  1.0,  1.0,  0.0,  0.0, 1.0, 0.0, // top-left
+             1.0, -1.0, -1.0,  1.0,  0.0,  0.0, 0.0, 1.0, // bottom-right
+             1.0,  1.0, -1.0,  1.0,  0.0,  0.0, 1.0, 1.0, // top-right         
+             1.0, -1.0, -1.0,  1.0,  0.0,  0.0, 0.0, 1.0, // bottom-right
+             1.0,  1.0,  1.0,  1.0,  0.0,  0.0, 1.0, 0.0, // top-left
+             1.0, -1.0,  1.0,  1.0,  0.0,  0.0, 0.0, 0.0, // bottom-left     
+            // bottom face
+            -1.0, -1.0, -1.0,  0.0, -1.0,  0.0, 0.0, 1.0, // top-right
+             1.0, -1.0, -1.0,  0.0, -1.0,  0.0, 1.0, 1.0, // top-left
+             1.0, -1.0,  1.0,  0.0, -1.0,  0.0, 1.0, 0.0, // bottom-left
+             1.0, -1.0,  1.0,  0.0, -1.0,  0.0, 1.0, 0.0, // bottom-left
+            -1.0, -1.0,  1.0,  0.0, -1.0,  0.0, 0.0, 0.0, // bottom-right
+            -1.0, -1.0, -1.0,  0.0, -1.0,  0.0, 0.0, 1.0, // top-right
+            // top face
+            -1.0,  1.0, -1.0,  0.0,  1.0,  0.0, 0.0, 1.0, // top-left
+             1.0,  1.0 , 1.0,  0.0,  1.0,  0.0, 1.0, 0.0, // bottom-right
+             1.0,  1.0, -1.0,  0.0,  1.0,  0.0, 1.0, 1.0, // top-right     
+             1.0,  1.0,  1.0,  0.0,  1.0,  0.0, 1.0, 0.0, // bottom-right
+            -1.0,  1.0, -1.0,  0.0,  1.0,  0.0, 0.0, 1.0, // top-left
+            -1.0,  1.0,  1.0,  0.0,  1.0,  0.0, 0.0, 0.0  // bottom-left        
+        };
+        gl.genVertexArrays(1, &cubeVAO);
+        gl.genBuffers(1, &cubeVBO);
+        // fill buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
+        gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * vertices.len, &vertices, gl.STATIC_DRAW);
+        // link vertex attributes
+        gl.bindVertexArray(cubeVAO);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 8 * @sizeOf(gl.Float), null);
+        gl.enableVertexAttribArray(1);
+        const normal_offset: [*c]c_uint = (3 * @sizeOf(gl.Float));
+        gl.vertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, 8 * @sizeOf(gl.Float), normal_offset);
+        gl.enableVertexAttribArray(2);
+        const tex_offset: [*c]c_uint = (6 * @sizeOf(gl.Float));
+        gl.vertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, 8 * @sizeOf(gl.Float), tex_offset);
+        gl.bindBuffer(gl.ARRAY_BUFFER, 0);
+        gl.bindVertexArray(0);
+    }
+    // render Cube
+    gl.bindVertexArray(cubeVAO);
+    gl.drawArrays(gl.TRIANGLES, 0, 36);
+    gl.bindVertexArray(0);
+}
+
+// renderQuad() renders a 1x1 XY quad in NDC
+// -----------------------------------------
+var quadVAO: gl.Uint = 0;
+var quadVBO: gl.Uint = 0;
+fn renderQuad() void {
+    if (quadVAO == 0)
+    {
+        const quadVertices = [_]f32{
+            // positions     // texture Coords
+            -1.0,  1.0, 0.0, 0.0, 1.0,
+            -1.0, -1.0, 0.0, 0.0, 0.0,
+             1.0,  1.0, 0.0, 1.0, 1.0,
+             1.0, -1.0, 0.0, 1.0, 0.0,
+        };
+        // setup plane VAO
+        gl.genVertexArrays(1, &quadVAO);
+        gl.genBuffers(1, &quadVBO);
+        gl.bindVertexArray(quadVAO);
+        gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+        gl.bufferData(gl.ARRAY_BUFFER, @sizeOf(gl.Float) * quadVertices.len, &quadVertices, gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), null);
+        gl.enableVertexAttribArray(1);
+        const tex_offset: [*c]c_uint = (3 * @sizeOf(gl.Float));
+        gl.vertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, 5 * @sizeOf(gl.Float), tex_offset);
+    }
+    gl.bindVertexArray(quadVAO);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.bindVertexArray(0);
+}
+
+
 fn framebuffer_size_callback(window: *glfw.Window, width: i32, height: i32) callconv(.C) void {
     _ = &window;
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
     gl.viewport(0, 0, width, height);
 }
 
@@ -283,7 +446,6 @@ fn scroll_callback(window: *glfw.Window, xoffset: f64, yoffset: f64) callconv(.C
 }
 
 fn loadTexture(path: [:0]const u8, gammaCorrection: bool) !gl.Uint {
-    // var textureID: gl.Uint = undefined;
     var textureID: c_uint = undefined;
     gl.genTextures(1, &textureID);
 
