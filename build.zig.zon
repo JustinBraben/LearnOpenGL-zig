@@ -2,7 +2,7 @@
     .name = .LearnOpenGL_zig,
     .fingerprint = 0xb73aced03eb84ab3,
     .version = "0.1.0",
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.14.1",
     .dependencies = .{
         .zmath = .{
             .url = "https://github.com/zig-gamedev/zmath/archive/ccf7297ef6c01e21b2d51ad81b5b6ce929e86a00.tar.gz",
