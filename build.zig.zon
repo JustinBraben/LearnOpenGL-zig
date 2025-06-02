@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.14.1",
     .dependencies = .{
         .zmath = .{
-            .url = "https://github.com/zig-gamedev/zmath/archive/ccf7297ef6c01e21b2d51ad81b5b6ce929e86a00.tar.gz",
-            .hash = "zmath-0.11.0-dev-wjwivZY1AwDO7yxNmZ5HWoU03f9mFBet8LN9-oYc3i29",
+            .url = "git+https://github.com/zig-gamedev/zmath.git#6a0747fe6834e58793500e05953c4c6ca045d3e1",
+            .hash = "zmath-0.11.0-dev-wjwivTArAwDIkHSuSiU3KuBvxh7igjJjJMqYRfy3hihO",
         },
         .zstbi = .{
             .url = "https://github.com/zig-gamedev/zstbi/archive/ec86094475a10ba07b141b12b7020f7b88b0e77b.tar.gz",
@@ -24,10 +24,10 @@
             .url = "https://github.com/zig-gamedev/zmesh/archive/1fc267af7c8bd00cb2d79de12b3e0512a3b787cf.tar.gz",
             .hash = "1220791c58e1f2e911d5b776efe8893c64684a56d9196b98d95b59ee45b3624b048d",
         },
-        .obj = .{
-            .url = "https://github.com/chip2n/zig-obj/archive/a2965b5860220538241fad5a5aa290312ca4e08a.tar.gz",
-            .hash = "obj-2.0.1-v8OfiljJAAAJx4eT9RzWIn2m9-AkEJx94-DYD28jEoz3"
-        }
+        .obj = .{ 
+            .url = "https://github.com/chip2n/zig-obj/archive/a2965b5860220538241fad5a5aa290312ca4e08a.tar.gz", 
+            .hash = "obj-2.0.1-v8OfiljJAAAJx4eT9RzWIn2m9-AkEJx94-DYD28jEoz3" 
+        },
     },
     .paths = .{
         "build.zig",

@@ -41,32 +41,37 @@ fn createCategory(
     for (examples) |example_name| {
         var example_name_split_iter = std.mem.splitScalar(u8, example_name, '/');
         const actual_example_name = example_name_split_iter.next().?;
-        const example = b.addExecutable(.{
-            .name = actual_example_name,
+
+        const example_exe_mod = b.createModule(.{
             .root_source_file = b.path(b.fmt("src/{s}/{s}.zig", .{ folder_path, example_name })),
             .target = target,
             .optimize = optimize,
         });
 
+        const example_exe = b.addExecutable(.{
+            .name = actual_example_name,
+            .root_module = example_exe_mod,
+        });
+
         // Add common imports and libraries
-        example.root_module.addImport("zglfw", modules.zglfw.module("root"));
-        example.linkLibrary(modules.zglfw.artifact("glfw"));
-        example.root_module.addImport("zopengl", modules.zopengl.module("root"));
-        example.root_module.addImport("zstbi", modules.zstbi.module("root"));
-        example.linkLibrary(modules.zstbi.artifact("zstbi"));
-        example.root_module.addImport("zmath", modules.zmath.module("root"));
-        example.root_module.addImport("zmesh", modules.zmesh.module("root"));
-        example.linkLibrary(modules.zmesh.artifact("zmesh"));
-        example.root_module.addImport("Shader", modules.shader);
-        example.root_module.addImport("Camera", modules.camera);
-        example.root_module.addImport("obj", modules.obj);
-        example.root_module.addImport("Model", modules.model);
+        example_exe_mod.addImport("zglfw", modules.zglfw.module("root"));
+        example_exe.linkLibrary(modules.zglfw.artifact("glfw"));
+        example_exe_mod.addImport("zopengl", modules.zopengl.module("root"));
+        example_exe_mod.addImport("zstbi", modules.zstbi.module("root"));
+        example_exe.linkLibrary(modules.zstbi.artifact("zstbi"));
+        example_exe_mod.addImport("zmath", modules.zmath.module("root"));
+        example_exe_mod.addImport("zmesh", modules.zmesh.module("root"));
+        example_exe.linkLibrary(modules.zmesh.artifact("zmesh"));
+        example_exe_mod.addImport("Shader", modules.shader);
+        example_exe_mod.addImport("Camera", modules.camera);
+        example_exe_mod.addImport("obj", modules.obj);
+        example_exe_mod.addImport("Model", modules.model);
 
         const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
-        compile_step.dependOn(&b.addInstallArtifact(example, .{}).step);
+        compile_step.dependOn(&b.addInstallArtifact(example_exe, .{}).step);
         b.getInstallStep().dependOn(compile_step);
 
-        const run_cmd = b.addRunArtifact(example);
+        const run_cmd = b.addRunArtifact(example_exe);
         run_cmd.step.dependOn(compile_step);
 
         const run_step = b.step(b.fmt("run-{s}", .{actual_example_name}), b.fmt("Run {s}", .{actual_example_name}));
@@ -106,7 +111,6 @@ fn createModules(
     });
     const zmath = b.dependency("zmath", .{
         .target = target,
-        .optimize = optimize,
     });
     const zmesh = b.dependency("zmesh", .{
         .target = target,
