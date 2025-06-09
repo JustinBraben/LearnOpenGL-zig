@@ -21,13 +21,13 @@
             .hash = "zglfw-0.10.0-dev-zgVDNJmZIQCIiO_94Sp5jqrPtz4Eumk3bDcxS7dSZfIj",
         },
         .zmesh = .{
-            .url = "https://github.com/zig-gamedev/zmesh/archive/1fc267af7c8bd00cb2d79de12b3e0512a3b787cf.tar.gz",
-            .hash = "1220791c58e1f2e911d5b776efe8893c64684a56d9196b98d95b59ee45b3624b048d",
+            .url = "git+https://github.com/zig-gamedev/zmesh.git#f8f528128704ae879a16ddb0a3470c5e0a144a20",
+            .hash = "zmesh-0.11.0-dev-oO3A5gx7CgCBPHsGeuNzwzXAyEvs57u39AD5EUZTScli",
         },
         .obj = .{ 
             .url = "https://github.com/chip2n/zig-obj/archive/a2965b5860220538241fad5a5aa290312ca4e08a.tar.gz", 
             .hash = "obj-2.0.1-v8OfiljJAAAJx4eT9RzWIn2m9-AkEJx94-DYD28jEoz3" 
-        },
+        }
     },
     .paths = .{
         "build.zig",
