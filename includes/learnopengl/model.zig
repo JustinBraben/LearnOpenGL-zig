@@ -170,13 +170,13 @@ fn calculateTangents(self: *Model, vertices: []Vertex, indices: []const u32) !vo
     // Process each triangle
     var i: usize = 0;
     while (i < indices.len) : (i += 3) {
-        const @"i0" = indices[i];
-        const @"i1" = indices[i + 1];
-        const @"i2" = indices[i + 2];
+        const i_0 = indices[i];
+        const i_1 = indices[i + 1];
+        const i_2 = indices[i + 2];
 
-        const v0 = &vertices[@"i0"];
-        const v1 = &vertices[@"i1"];
-        const v2 = &vertices[@"i2"];
+        const v0 = &vertices[i_0];
+        const v1 = &vertices[i_1];
+        const v2 = &vertices[i_2];
 
         const edge1 = v1.position.sub(v0.position);
         const edge2 = v2.position.sub(v0.position);
@@ -198,12 +198,12 @@ fn calculateTangents(self: *Model, vertices: []Vertex, indices: []const u32) !vo
             f * (-delta_uv2.x() * edge1.z() + delta_uv1.x() * edge2.z()),
         ).norm();
 
-        vertices[@"i0"].tangent = tangent;
-        vertices[@"i0"].bitangent = bitangent;
-        vertices[@"i1"].tangent = tangent;
-        vertices[@"i1"].bitangent = bitangent;
-        vertices[@"i2"].tangent = tangent;
-        vertices[@"i2"].bitangent = bitangent;
+        vertices[i_0].tangent = tangent;
+        vertices[i_0].bitangent = bitangent;
+        vertices[i_1].tangent = tangent;
+        vertices[i_1].bitangent = bitangent;
+        vertices[i_2].tangent = tangent;
+        vertices[i_2].bitangent = bitangent;
     }
 }
 
