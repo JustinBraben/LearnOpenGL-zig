@@ -81,112 +81,9 @@ pub fn main() !void {
     defer zmesh.deinit();
 
     const model_obj_path = "resources/objects/backpack/backpack.obj";
-    const model_mtl_path = "resources/objects/backpack/backpack.mtl";
-    var our_model = try Model.initFromPath(allocator, model_obj_path, model_mtl_path);
+
+    var our_model = try Model.init(allocator, model_obj_path, false);
     defer our_model.deinit();
-
-    // After creating your cube
-    var cube = zmesh.Shape.initCube();
-    defer cube.deinit();
-    // Unweld the cube to create distinct vertices for each face
-    cube.unweld();
-
-    // cube VAO
-    var cubeVAO: gl.Uint = undefined;
-    var cubeVBO: gl.Uint = undefined;
-    var cubeEBO: gl.Uint = undefined;
-    gl.genVertexArrays(1, &cubeVAO);
-    defer gl.deleteVertexArrays(1, &cubeVAO);
-    gl.genBuffers(1, &cubeVBO);
-    defer gl.deleteBuffers(1, &cubeVBO);
-    gl.genBuffers(1, &cubeEBO);
-    defer gl.deleteBuffers(1, &cubeEBO);
-
-    gl.bindVertexArray(cubeVAO);
-    // Assuming positions are [3]f32, normals are [3]f32, and texcoords are [2]f32
-    // Buffer the position data
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVBO);
-    gl.bufferData(gl.ARRAY_BUFFER, @intCast(cube.positions.len * @sizeOf([3]f32)), cube.positions.ptr, gl.STATIC_DRAW);
-
-    // Set up position attribute
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, @sizeOf([3]f32), null);
-
-    // Buffer the normal data (if available)
-    if (cube.normals) |normals| {
-        var normalVBO: gl.Uint = undefined;
-        gl.genBuffers(1, &normalVBO);
-        defer gl.deleteBuffers(1, &normalVBO);
-        
-        gl.bindBuffer(gl.ARRAY_BUFFER, normalVBO);
-        gl.bufferData(gl.ARRAY_BUFFER, @intCast(normals.len * @sizeOf([3]f32)), normals.ptr, gl.STATIC_DRAW);
-        
-        gl.enableVertexAttribArray(1);
-        gl.vertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, @sizeOf([3]f32), null);
-    }
-
-    var texcoordVBO: gl.Uint = undefined;
-    gl.genBuffers(1, &texcoordVBO);
-    defer gl.deleteBuffers(1, &texcoordVBO);
-    
-    // Create texture coordinates for a cube (6 faces, 4 vertices per face)
-    // This is if the cube doesn't have texture coordinates already
-    const texcoords = try allocator.alloc([2]f32, cube.positions.len);
-    defer allocator.free(texcoords);
-
-    // The cube likely has 36 vertices (6 faces * 2 triangles * 3 vertices)
-    // Each face should have consistent texture coordinates
-    for (0..6) |face| {
-        // For each face, set texture coordinates for 6 vertices (2 triangles)
-        const base_idx = face * 6;
-        
-        // First triangle (bottom-left, bottom-right, top-right)
-        texcoords[base_idx + 0] = .{0.0, 0.0}; // bottom-left
-        texcoords[base_idx + 1] = .{1.0, 0.0}; // bottom-right
-        texcoords[base_idx + 2] = .{1.0, 1.0}; // top-right
-        
-        // Second triangle (top-right, top-left, bottom-left)
-        texcoords[base_idx + 3] = .{1.0, 1.0}; // top-right
-        texcoords[base_idx + 4] = .{0.0, 1.0}; // top-left
-        texcoords[base_idx + 5] = .{0.0, 0.0}; // bottom-left
-    }
-
-    // // Print vertex positions to verify ordering
-    // for (cube.positions, 0..) |pos, i| {
-    //     std.debug.print("Vertex {d}: ({d:.1}, {d:.1}, {d:.1})\n", 
-    //         .{i, pos[0], pos[1], pos[2]});
-    // }
-
-    // // Print debug information after computations
-    // std.debug.print("Cube stats after processing:\n", .{});
-    // std.debug.print("  - Indices: {d}\n", .{cube.indices.len});
-    // std.debug.print("  - Positions: {d}\n", .{cube.positions.len});
-    // std.debug.print("  - Has normals: {}\n", .{cube.normals != null});
-    // std.debug.print("  - Has texcoords: {}\n", .{cube.texcoords != null});
-
-    // // Manually print texture coordinates to verify
-    // std.debug.print("Added texcoords. First few: \n", .{});
-    // for (texcoords, 0..) |coord, i| {
-    //     if (i < 8) std.debug.print("  [{d}]: ({d:.2}, {d:.2})\n", .{i, coord[0], coord[1]});
-    // }
-
-    // Then use these texture coordinates in your rendering pipeline
-    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordVBO);
-    gl.bufferData(gl.ARRAY_BUFFER, @intCast(texcoords.len * @sizeOf([2]f32)), texcoords.ptr, gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(2);
-    gl.vertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, @sizeOf([2]f32), null);
-
-    // Buffer the indices
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeEBO);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, @intCast(cube.indices.len * @sizeOf(zmesh.Shape.IndexType)), cube.indices.ptr, gl.STATIC_DRAW);
-    gl.bindVertexArray(0);
-
-    const diffuse_map_path: [:0]const u8 = "resources/textures/container2.png";
-
-    // load textures (we now use a utility function to keep the code more organized)
-    // -----------------------------------------------------------------------------
-    var diffuse_map_texture: gl.Uint = undefined;
-    try loadTexture(diffuse_map_path, &diffuse_map_texture);
 
     // Buffer to store Model matrix
     var model: [16]f32 = undefined;
@@ -217,7 +114,6 @@ pub fn main() !void {
 
         // don't forget to enable shader before setting uniforms
         our_shader.use();
-        our_shader.setInt("texture_diffuse1", 0);
 
         // view/projection transformations
         const window_size = window.getSize();
@@ -230,14 +126,11 @@ pub fn main() !void {
         our_shader.setMat4f("view", view);
 
         // render the loaded model
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, diffuse_map_texture);
-        gl.bindVertexArray(cubeVAO);
-        zm.storeMat(&model, zm.identity());
+        // translate it down so it's at the center of the scene
+        // it's a bit too big for our scene, so scale it down
+        zm.storeMat(&model, zm.mul(zm.translation(0.0, 0.0, 0.0), zm.scaling(1.0, 1.0, 1.0)));
         our_shader.setMat4f("model",  model);
-        // bind diffuse map
-        gl.drawElements(gl.TRIANGLES, @intCast(cube.indices.len), gl.UNSIGNED_INT, null);
-        gl.bindVertexArray(0);
+        our_model.draw(&our_shader);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
