@@ -74,13 +74,18 @@ pub fn main() !void {
     // -------------------------
     var simpleDepthShader = try Shader.create(
         arena,
-        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.shadow_mapping_depth.vs",
-        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.shadow_mapping_depth.fs",
+        "src/5.advanced_lighting/3.1.2.shadow_mapping_base/3.1.2.shadow_mapping_depth.vs",
+        "src/5.advanced_lighting/3.1.2.shadow_mapping_base/3.1.2.shadow_mapping_depth.fs",
     );
     var debugDepthQuad = try Shader.create(
         arena,
-        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.debug_quad.vs",
-        "src/5.advanced_lighting/3.1.1.shadow_mapping_depth/3.1.1.debug_quad_depth.fs",
+        "src/5.advanced_lighting/3.1.2.shadow_mapping_base/3.1.2.debug_quad.vs",
+        "src/5.advanced_lighting/3.1.2.shadow_mapping_base/3.1.2.debug_quad_depth.fs",
+    );
+    var shadowMappingShader = try Shader.create(
+        arena,
+        "src/5.advanced_lighting/3.1.2.shadow_mapping_base/3.1.2.shadow_mapping.vs",
+        "src/5.advanced_lighting/3.1.2.shadow_mapping_base/3.1.2.shadow_mapping.fs",
     );
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -175,6 +180,8 @@ pub fn main() !void {
     // --------------------
     debugDepthQuad.use();
     debugDepthQuad.setInt("depthMap", 0);
+    shadowMappingShader.setInt("diffuseTexture", 1);
+    shadowMappingShader.setInt("shadowMap", 2);
 
     // lighting info
     // -------------
