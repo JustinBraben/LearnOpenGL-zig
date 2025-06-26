@@ -1,0 +1,747 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build 1.1.hello_window",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "1.1.hello_window"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 1.2.hello_window_clear",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "1.2.hello_window_clear"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.1.hello_triangle",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.1.hello_triangle"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.2.hello_triangle_indexed",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.2.hello_triangle_indexed"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.3.hello_triangle_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.3.hello_triangle_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.4.hello_triangle_exercise2",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.4.hello_triangle_exercise2"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.5.hello_triangle_exercise3",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.5.hello_triangle_exercise3"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.1.shaders_uniform",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.1.shaders_uniform"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.2.shaders_interpolation",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.2.shaders_interpolation"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.3.shaders_class",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.3.shaders_class"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.4.shaders_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.4.shaders_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.5.shaders_exercise2",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.5.shaders_exercise2"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.6.shaders_exercise3",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.6.shaders_exercise3"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.1.textures",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.1.textures"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.2.textures_combined",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.2.textures_combined"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.3.textures_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.3.textures_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.4.textures_exercise2",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.4.textures_exercise2"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.5.textures_exercise3",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.5.textures_exercise3"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.6.textures_exercise4",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.6.textures_exercise4"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.1.transformations",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.1.transformations"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.2.transformations_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.2.transformations_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.3.transformations_exercise2",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.3.transformations_exercise2"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.1.coordinate_systems",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.1.coordinate_systems"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.2.coordinate_systems_depth",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.2.coordinate_systems_depth"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.3.coordinate_systems_multiple",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.3.coordinate_systems_multiple"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.4.coordinate_systems_exercise3",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.4.coordinate_systems_exercise3"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 7.1.camera_circle",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "7.1.camera_circle"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 7.2.camera_keyboard_dt",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "7.2.camera_keyboard_dt"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 7.3.camera_mouse_zoom",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "7.3.camera_mouse_zoom"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 7.4.camera_class",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "7.4.camera_class"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 7.5.camera_class_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "7.5.camera_class_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 1.colors",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "1.colors"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.1.basic_lighting_diffuse",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.1.basic_lighting_diffuse"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.2.basic_lighting_specular",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.2.basic_lighting_specular"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.3.basic_lighting_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.3.basic_lighting_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.4.basic_lighting_exercise2",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.4.basic_lighting_exercise2"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.5.basic_lighting_exercise3",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.5.basic_lighting_exercise3"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.1.materials",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.1.materials"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.2.materials_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.2.materials_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.1.lighting_maps_diffuse_map",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.1.lighting_maps_diffuse_map"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.2.lighting_maps_specular_map",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.2.lighting_maps_specular_map"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.3.lighting_maps_exercise2",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.3.lighting_maps_exercise2"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.4.lighting_maps_exercise4",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.4.lighting_maps_exercise4"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.1.light_casters_directional",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.1.light_casters_directional"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.2.light_casters_point",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.2.light_casters_point"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.3.light_casters_spot",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.3.light_casters_spot"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.4.light_casters_spot_soft",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.4.light_casters_spot_soft"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.1.multiple_lights",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.1.multiple_lights"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.2.multiple_lights_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.2.multiple_lights_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 1.model_loading",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "1.model_loading"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 1.1.depth_testing",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "1.1.depth_testing"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 1.2.depth_testing_view",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "1.2.depth_testing_view"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.stencil_testing",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.stencil_testing"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.1.blending_discard",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.1.blending_discard"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.2.blending_sort",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.2.blending_sort"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 4.face_culling_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "4.face_culling_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.1.framebuffers",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.1.framebuffers"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 5.2.framebuffers_exercise1",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "5.2.framebuffers_exercise1"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.1.cubemaps_skybox",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.1.cubemaps_skybox"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 6.2.cubemaps_environment_mapping",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "6.2.cubemaps_environment_mapping"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 8.advanced_glsl_ubo",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "8.advanced_glsl_ubo"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 9.1.geometry_shader_houses",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "9.1.geometry_shader_houses"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 1.advanced_lighting",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "1.advanced_lighting"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 2.gamma_correction",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "2.gamma_correction"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.1.1.shadow_mapping_depth",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.1.1.shadow_mapping_depth"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build 3.1.2.shadow_mapping_base",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "3.1.2.shadow_mapping_base"
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "build all",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "all"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
