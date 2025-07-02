@@ -15,9 +15,6 @@
     }, .zglfw = .{
         .url = "https://github.com/zig-gamedev/zglfw/archive/dcb1dae7d4a90f88b70dbae73300ab9b19fb250c.tar.gz",
         .hash = "zglfw-0.10.0-dev-zgVDNJmZIQCIiO_94Sp5jqrPtz4Eumk3bDcxS7dSZfIj",
-    }, .zmesh = .{
-        .url = "git+https://github.com/zig-gamedev/zmesh.git#f8f528128704ae879a16ddb0a3470c5e0a144a20",
-        .hash = "zmesh-0.11.0-dev-oO3A5gx7CgCBPHsGeuNzwzXAyEvs57u39AD5EUZTScli",
     }, .obj = .{
         .url = "git+https://github.com/chip2n/zig-obj#4ad4f6463b553395a1cd5388846d8623f350bf8b",
         .hash = "obj-3.0.0-v8OfipDLAAAfZnwVIVO_8cb6ZWpkxWK6-HTkkF-k6WuO",

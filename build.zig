@@ -61,8 +61,6 @@ fn createCategory(
         example_exe.linkLibrary(modules.zstbi.artifact("zstbi"));
         example_exe_mod.addImport("zmath", modules.zmath.module("root"));
         example_exe_mod.addImport("zlm", modules.zalgebra.module("zalgebra"));
-        example_exe_mod.addImport("zmesh", modules.zmesh.module("root"));
-        example_exe.linkLibrary(modules.zmesh.artifact("zmesh"));
         example_exe_mod.addImport("Shader", modules.shader);
         example_exe_mod.addImport("Camera", modules.camera);
         example_exe_mod.addImport("obj", modules.obj);
@@ -88,7 +86,6 @@ const Modules = struct {
     zstbi: *std.Build.Dependency,
     zopengl: *std.Build.Dependency,
     zglfw: *std.Build.Dependency,
-    zmesh: *std.Build.Dependency,
     shader: *std.Build.Module,
     camera: *std.Build.Module,
     mesh: *std.Build.Module,
@@ -115,10 +112,6 @@ fn createModules(
         .target = target,
     });
     const zalgebra = b.dependency("zalgebra", .{});
-    const zmesh = b.dependency("zmesh", .{
-        .target = target,
-        .optimize = optimize,
-    });
     const obj = b.dependency("obj", .{ .target = target, .optimize = optimize });
 
     // modules
@@ -163,7 +156,6 @@ fn createModules(
         .zstbi = zstbi,
         .zopengl = zopengl,
         .zglfw = zglfw,
-        .zmesh = zmesh,
         .shader = shader_module,
         .camera = camera_module,
         .mesh = mesh_module,

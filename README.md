@@ -35,7 +35,7 @@ zig build run-2.1.hello_triangle
 - [zstbi](https://github.com/zig-gamedev/zstbi): Zig bindings and build package for stb_image, stb_image_resize and stb_image_write
 - [zopengl](https://github.com/zig-gamedev/zopengl): OpenGL loader and bindings for Zig.
 - [zglfw](https://github.com/zig-gamedev/zglfw): Zig build package and bindings for GLFW 
-- [zmesh](https://github.com/zig-gamedev/zmesh): Zig library for loading, generating, processing and optimising triangle meshes.
+- [zig-obj](https://github.com/chip2n/zig-obj): Minimal Zig parser for .obj and .mtl files.
 
 ## License
 

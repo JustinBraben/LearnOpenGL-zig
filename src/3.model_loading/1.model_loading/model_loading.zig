@@ -4,7 +4,6 @@ const glfw = @import("zglfw");
 const zopengl = @import("zopengl");
 const zstbi = @import("zstbi");
 const zm = @import("zmath");
-const zmesh = @import("zmesh");
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
 const Camera = @import("Camera");
@@ -77,9 +76,6 @@ pub fn main() !void {
 
     // load models
     // -----------
-    zmesh.init(allocator);
-    defer zmesh.deinit();
-
     const model_obj_path = "resources/objects/backpack/backpack.obj";
 
     var our_model = try Model.init(allocator, model_obj_path, false);
