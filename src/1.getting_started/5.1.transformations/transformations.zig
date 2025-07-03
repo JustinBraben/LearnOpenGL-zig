@@ -1,8 +1,11 @@
 const std = @import("std");
+const math = std.math;
 const glfw = @import("zglfw");
 const zopengl = @import("zopengl");
 const zstbi = @import("zstbi");
-const zm = @import("zmath");
+const za = @import("zalgebra");
+const Vec3 = za.Vec3;
+const Mat4 = za.Mat4;
 const gl = zopengl.bindings;
 const Shader = @import("Shader");
 
@@ -170,13 +173,15 @@ pub fn main() !void {
         // get matrix's uniform location and set matrix
         shader_program.use();
 
-        const rotZ = zm.rotationZ(@as(f32, @floatCast(glfw.getTime())));
-        const translation = zm.translation(0.5, -0.5, 0.0);
-        const transformM = zm.mul(rotZ, translation);
-        var transform: [16]f32 = undefined;
-        zm.storeMat(&transform, transformM);
+        var transform = za.Mat4.identity();
+        transform = transform.translate(Vec3.new(0.5, -0.5, 0.0));
+        transform = transform.rotate(
+            math.radiansToDegrees(@as(f32, @floatCast(glfw.getTime()))), 
+            Vec3.new(0.0, 0.0, 1.0)
+        );
+
         const transformLoc = gl.getUniformLocation(shader_program.ID, "transform");
-        gl.uniformMatrix4fv(transformLoc, 1, gl.FALSE, &transform);
+        gl.uniformMatrix4fv(transformLoc, 1, gl.FALSE, @ptrCast(&transform.data));
 
         // gl.bindVertexArray(VAO);
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, null);

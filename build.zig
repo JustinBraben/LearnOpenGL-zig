@@ -60,7 +60,7 @@ fn createCategory(
         example_exe_mod.addImport("zstbi", modules.zstbi.module("root"));
         example_exe.linkLibrary(modules.zstbi.artifact("zstbi"));
         example_exe_mod.addImport("zmath", modules.zmath.module("root"));
-        example_exe_mod.addImport("zlm", modules.zalgebra.module("zalgebra"));
+        example_exe_mod.addImport("zalgebra", modules.zalgebra.module("zalgebra"));
         example_exe_mod.addImport("Shader", modules.shader);
         example_exe_mod.addImport("Camera", modules.camera);
         example_exe_mod.addImport("obj", modules.obj);
@@ -134,7 +134,7 @@ fn createModules(
     });
     mesh_module.addImport("Shader", shader_module);
     mesh_module.addImport("zopengl", zopengl.module("root"));
-    mesh_module.addImport("zlm", zalgebra.module("zalgebra"));
+    mesh_module.addImport("zalgebra", zalgebra.module("zalgebra"));
     mesh_module.addImport("zstbi", zstbi.module("root"));
     mesh_module.linkLibrary(zstbi.artifact("zstbi"));
     const obj_module = obj.module("obj");
@@ -146,7 +146,7 @@ fn createModules(
     model_module.addImport("Shader", shader_module);
     model_module.addImport("obj", obj_module);
     model_module.addImport("zopengl", zopengl.module("root"));
-    model_module.addImport("zlm", zalgebra.module("zalgebra"));
+    model_module.addImport("zalgebra", zalgebra.module("zalgebra"));
     model_module.addImport("zstbi", zstbi.module("root"));
     model_module.linkLibrary(zstbi.artifact("zstbi"));
 
