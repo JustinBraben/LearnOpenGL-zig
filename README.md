@@ -36,6 +36,7 @@ zig build run-2.1.hello_triangle
 - [zopengl](https://github.com/zig-gamedev/zopengl): OpenGL loader and bindings for Zig.
 - [zglfw](https://github.com/zig-gamedev/zglfw): Zig build package and bindings for GLFW 
 - [zig-obj](https://github.com/chip2n/zig-obj): Minimal Zig parser for .obj and .mtl files.
+- [zalgebra](https://github.com/kooparse/zalgebra): Linear algebra zig math library for graphics
 
 ## License
 
