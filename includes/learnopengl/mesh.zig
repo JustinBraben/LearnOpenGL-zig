@@ -4,18 +4,18 @@ const ArrayList = std.ArrayList;
 const zstbi = @import("zstbi");
 const zopengl = @import("zopengl");
 const gl = zopengl.bindings;
-const zlm = @import("zlm");
+const za = @import("zalgebra");
 
 const Shader = @import("Shader");
 
 const Mesh = @This();
 
 pub const Vertex = struct {
-    position: zlm.Vec3 = .zero(),
-    normal: zlm.Vec3 = .zero(),
-    tex_coords: zlm.Vec2 = .zero(),
-    tangent: zlm.Vec3 = .zero(),
-    bitangent: zlm.Vec3 = .zero(),
+    position: za.Vec3 = .zero(),
+    normal: za.Vec3 = .zero(),
+    tex_coords: za.Vec2 = .zero(),
+    tangent: za.Vec3 = .zero(),
+    bitangent: za.Vec3 = .zero(),
 };
 
 pub const Texture = struct {

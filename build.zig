@@ -66,8 +66,19 @@ fn createCategory(
         example_exe_mod.addImport("obj", modules.obj);
         example_exe_mod.addImport("Model", modules.model);
 
+        const output_dir = b.fmt("./{s}", .{@tagName(optimize)});
+
         const compile_step = b.step(actual_example_name, b.fmt("Build {s}", .{actual_example_name}));
-        compile_step.dependOn(&b.addInstallArtifact(example_exe, .{}).step);
+        compile_step.dependOn(&b.addInstallArtifact(example_exe, .{ .dest_dir = .{
+            .override = .{ .custom = output_dir },
+            },
+            .pdb_dir = .{
+                .override = .{ .custom = output_dir },
+            },
+            .h_dir = .{
+                .override = .{ .custom = output_dir },
+            },
+        }).step);
         b.getInstallStep().dependOn(compile_step);
 
         const run_cmd = b.addRunArtifact(example_exe);

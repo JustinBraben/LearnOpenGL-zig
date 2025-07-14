@@ -4,7 +4,7 @@ const ArrayList = std.ArrayList;
 const zstbi = @import("zstbi");
 const zopengl = @import("zopengl");
 const gl = zopengl.bindings;
-const zlm = @import("zlm");
+const za = @import("zalgebra");
 const obj = @import("obj");
 const Mesh = @import("mesh.zig");
 const Vertex = Mesh.Vertex;
@@ -97,7 +97,7 @@ fn processMesh(self: *Model, obj_data: *const obj.ObjData, mesh: *const obj.Mesh
         // Position
         if (index.vertex) |v_idx| {
             const base_idx = v_idx * 3;
-            vertex.position = zlm.Vec3.new(
+            vertex.position = za.Vec3.new(
                 obj_data.vertices[base_idx],
                 obj_data.vertices[base_idx + 1],
                 obj_data.vertices[base_idx + 2],
@@ -107,7 +107,7 @@ fn processMesh(self: *Model, obj_data: *const obj.ObjData, mesh: *const obj.Mesh
         // Normal
         if (index.normal) |n_idx| {
             const base_idx = n_idx * 3;
-            vertex.normal = zlm.Vec3.new(
+            vertex.normal = za.Vec3.new(
                 obj_data.normals[base_idx],
                 obj_data.normals[base_idx + 1],
                 obj_data.normals[base_idx + 2],
@@ -117,7 +117,7 @@ fn processMesh(self: *Model, obj_data: *const obj.ObjData, mesh: *const obj.Mesh
         // Texture coordinates
         if (index.tex_coord) |t_idx| {
             const base_idx = t_idx * 2;
-            vertex.tex_coords = zlm.Vec2.new(
+            vertex.tex_coords = za.Vec2.new(
                 obj_data.tex_coords[base_idx],
                 obj_data.tex_coords[base_idx + 1],
             );
@@ -186,13 +186,13 @@ fn calculateTangents(self: *Model, vertices: []Vertex, indices: []const u32) !vo
 
         const f: f32 = 1.0 / (delta_uv1.x() * delta_uv2.y() - delta_uv2.x() * delta_uv1.y());
 
-        const tangent = zlm.Vec3.new(
+        const tangent = za.Vec3.new(
             f * (delta_uv2.y() * edge1.x() - delta_uv1.y() * edge2.x()),
             f * (delta_uv2.y() * edge1.y() - delta_uv1.y() * edge2.y()),
             f * (delta_uv2.y() * edge1.z() - delta_uv1.y() * edge2.z()),
         ).norm();
 
-        const bitangent = zlm.Vec3.new(
+        const bitangent = za.Vec3.new(
             f * (-delta_uv2.x() * edge1.x() + delta_uv1.x() * edge2.x()),
             f * (-delta_uv2.x() * edge1.y() + delta_uv1.x() * edge2.y()),
             f * (-delta_uv2.x() * edge1.z() + delta_uv1.x() * edge2.z()),
