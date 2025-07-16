@@ -58,7 +58,6 @@ fn createCategory(
         example_exe.linkLibrary(modules.zglfw.artifact("glfw"));
         example_exe_mod.addImport("zopengl", modules.zopengl.module("root"));
         example_exe_mod.addImport("zstbi", modules.zstbi.module("root"));
-        example_exe.linkLibrary(modules.zstbi.artifact("zstbi"));
         example_exe_mod.addImport("zmath", modules.zmath.module("root"));
         example_exe_mod.addImport("zalgebra", modules.zalgebra.module("zalgebra"));
         example_exe_mod.addImport("Shader", modules.shader);
@@ -147,7 +146,6 @@ fn createModules(
     mesh_module.addImport("zopengl", zopengl.module("root"));
     mesh_module.addImport("zalgebra", zalgebra.module("zalgebra"));
     mesh_module.addImport("zstbi", zstbi.module("root"));
-    mesh_module.linkLibrary(zstbi.artifact("zstbi"));
     const obj_module = obj.module("obj");
     const model_module = b.addModule("Model", .{
         .root_source_file = b.path("includes/learnopengl/model.zig"),
@@ -159,7 +157,6 @@ fn createModules(
     model_module.addImport("zopengl", zopengl.module("root"));
     model_module.addImport("zalgebra", zalgebra.module("zalgebra"));
     model_module.addImport("zstbi", zstbi.module("root"));
-    model_module.linkLibrary(zstbi.artifact("zstbi"));
 
     return .{
         .zmath = zmath,
