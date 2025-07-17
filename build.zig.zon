@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.14.1",
     .dependencies = .{
         .zmath = .{
-            .url = "git+https://github.com/zig-gamedev/zmath.git#6a0747fe6834e58793500e05953c4c6ca045d3e1",
-            .hash = "zmath-0.11.0-dev-wjwivTArAwDIkHSuSiU3KuBvxh7igjJjJMqYRfy3hihO",
+            .url = "git+https://github.com/zig-gamedev/zmath#5128dc8a8068aab398f844c1f5fddc8132310146",
+            .hash = "zmath-0.11.0-dev-wjwivU8rAwD9kF3KJhflcYp2SNvx18L_r1XJc17J5nzd",
         },
         .zstbi = .{
             .url = "git+https://github.com/zig-gamedev/zstbi#094c4bba5cdbec167d3f6aaa98cccccd5c99145f",
